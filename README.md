@@ -63,47 +63,81 @@ A GitHub Actions workflow checks for new OpenClaw releases daily and opens an is
 
 ## Installation
 
-### Option 1: One-Liner Install (Recommended)
+Pick your tool. Each command downloads and installs the skill in one step.
 
-Auto-detects your installed AI tools and installs to all of them:
+**Claude Code:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools claude
+```
+
+**OpenClaw:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools openclaw
+```
+
+**Cursor:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools cursor
+```
+
+**Gemini CLI:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools gemini
+```
+
+**OpenAI Codex:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools codex
+```
+
+**Anti-Gravity:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools antigravity
+```
+
+**OpenCode:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools opencode
+```
+
+**Roo Code:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools roo
+```
+
+**block/goose:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools goose
+```
+
+**Cline:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools cline
+```
+
+### Multiple tools at once
+
+Comma-separate the tools you want:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools claude,openclaw,cursor
+```
+
+### All detected tools
+
+Auto-detects every supported AI tool on your system and installs to all of them:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh
 ```
 
-Or install to specific tools only:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools claude,openclaw
-```
-
-**Supported `--tools` values:** `claude`, `gemini`, `antigravity`, `opencode`, `openclaw`, `codex`, `goose`, `roo`, `cursor`, `cline`
-
-### Option 2: Git Clone
+### Git clone (manual)
 
 ```bash
 git clone https://github.com/jacob-bd/the-openclaw-optimizer.git
-cd jbd-openclaw-optimizer
-cp -r openclaw-optimizer ~/.claude/skills/           # Claude Code
-cp -r openclaw-optimizer ~/.openclaw/workspace/skills/ # OpenClaw
+cd the-openclaw-optimizer
+cp -r openclaw-optimizer ~/.claude/skills/             # or your tool's skills path
 ```
-
-### Option 3: Manual Copy
-
-Copy the `openclaw-optimizer/` directory to your tool's skills path:
-
-| AI Tool | Skills Path |
-|---------|-------------|
-| Claude Code | `~/.claude/skills/` |
-| Cursor | `~/.cursor/skills/` |
-| Gemini CLI | `~/.gemini/skills/` |
-| Anti-Gravity | `~/.gemini/antigravity/skills/` |
-| OpenCode | `~/.config/opencode/skills/` |
-| OpenClaw | `~/.openclaw/workspace/skills/` |
-| OpenAI Codex | `~/.codex/skills/` |
-| block/goose | `~/.config/goose/skills/` |
-| Roo Code | `~/.roo/skills/` |
-| Cline | `~/.cline/skills/` |
 
 The systems directory (`~/.openclaw-optimizer/systems/`) is created automatically on first run.
 
