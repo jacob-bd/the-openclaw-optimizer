@@ -257,6 +257,18 @@ Everything below came from real production failures, not documentation. Each one
 
 ---
 
+## Make It Yours
+
+This skill gets better the more you use it. Fork the repo and maintain your own version. After every session where the skill helps you troubleshoot or configure something, ask your AI tool:
+
+> Did we learn anything this session that should be updated in the skill? Any CLI commands that didn't work as documented, troubleshooting steps that were missing, or advice that was wrong?
+
+The skill already has a built-in continuous improvement workflow (Section 12 in SKILL.md). It tracks when to update, what to update, and how to version bump. But it only works if you actually let it update itself after real-world use.
+
+Your deployment is unique. The providers you use, the cron jobs you run, the bugs you hit -- all of that turns into knowledge that makes the skill sharper for your specific setup. Over time, your fork becomes an expert on your system.
+
+---
+
 ## Version History
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the full release history.
