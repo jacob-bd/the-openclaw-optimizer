@@ -1,0 +1,5 @@
+# System profiles contain deployment-specific sensitive data
+# (IPs, access credentials, token prefixes, network topology)
+# Only the blank template is tracked in git.
+systems/*
+!systems/TEMPLATE.md

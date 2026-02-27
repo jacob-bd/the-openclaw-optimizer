@@ -1,0 +1,261 @@
+{
+  "skill_version": "2026.2.26",
+  "last_updated": "2026-02-26",
+  "description": "Maps each SKILL.md section to its source documentation and changelog keywords. Used by the Self-Update Protocol to identify which sections need refreshing when a new OpenClaw version is detected.",
+  "sections": {
+    "providers": {
+      "title": "Model Providers \u2014 Complete Reference",
+      "skill_md_anchor": "1-model-providers--complete-reference",
+      "sources": [
+        "https://docs.openclaw.ai/providers/index.md",
+        "https://docs.openclaw.ai/concepts/model-providers.md",
+        "https://docs.openclaw.ai/gateway/configuration-reference.md",
+        "https://docs.openclaw.ai/gateway/local-models.md"
+      ],
+      "changelog_keywords": [
+        "provider",
+        "model",
+        "auth",
+        "api key",
+        "slug",
+        "baseUrl",
+        "apiKey",
+        "kilocode",
+        "moonshot",
+        "mistral",
+        "groq",
+        "xai",
+        "bedrock",
+        "together",
+        "venice",
+        "huggingface",
+        "synthetic",
+        "ollama",
+        "vllm"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "model_routing": {
+      "title": "Model Routing Strategy",
+      "skill_md_anchor": "2-model-routing-strategy",
+      "sources": [
+        "https://docs.openclaw.ai/concepts/models.md",
+        "https://docs.openclaw.ai/concepts/model-failover.md",
+        "https://docs.openclaw.ai/gateway/configuration-reference.md"
+      ],
+      "changelog_keywords": [
+        "routing",
+        "fallback",
+        "primary",
+        "model selection",
+        "failover",
+        "cooldown",
+        "per-agent",
+        "params",
+        "thinkingDefault"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "context": {
+      "title": "Context Management",
+      "skill_md_anchor": "3-context-management",
+      "sources": [
+        "https://docs.openclaw.ai/concepts/compaction.md",
+        "https://docs.openclaw.ai/concepts/context.md",
+        "https://docs.openclaw.ai/reference/session-management-compaction.md",
+        "https://docs.openclaw.ai/concepts/memory.md"
+      ],
+      "changelog_keywords": [
+        "compaction",
+        "context",
+        "session",
+        "memory",
+        "token",
+        "safeguard",
+        "memoryFlush",
+        "MEMORY.md",
+        "AGENTS.md",
+        "SOUL.md",
+        "bootstrap",
+        "contextTokens",
+        "reserveTokensFloor"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "cron": {
+      "title": "Cron & Automation",
+      "skill_md_anchor": "4-cron--automation",
+      "sources": [
+        "https://docs.openclaw.ai/automation/cron-jobs",
+        "https://docs.openclaw.ai/automation/cron-vs-heartbeat",
+        "https://docs.openclaw.ai/gateway/configuration-reference.md",
+        "https://docs.openclaw.ai/gateway/heartbeat"
+      ],
+      "changelog_keywords": [
+        "cron",
+        "schedule",
+        "job",
+        "automation",
+        "isolated",
+        "sessionTarget",
+        "heartbeat",
+        "HEARTBEAT_OK",
+        "NO_REPLY",
+        "agentTurn",
+        "systemEvent",
+        "delivery",
+        "announce",
+        "sessionRetention",
+        "maxConcurrentRuns"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "skills": {
+      "title": "Skills & Plugins",
+      "skill_md_anchor": "5-skills--plugins",
+      "sources": [
+        "https://docs.openclaw.ai/tools/skills.md",
+        "https://docs.openclaw.ai/tools/clawhub.md"
+      ],
+      "changelog_keywords": [
+        "skill",
+        "plugin",
+        "clawhub",
+        "requires",
+        "disable-model-invocation",
+        "user-invocable",
+        "bins",
+        "anyBins",
+        "metadata.openclaw",
+        "npm",
+        "SKILL.md"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "multi_agent": {
+      "title": "Multi-Agent & Sub-Agent Architecture",
+      "skill_md_anchor": "6-multi-agent--sub-agent-architecture",
+      "sources": [
+        "https://docs.openclaw.ai/concepts/multi-agent.md",
+        "https://docs.openclaw.ai/tools/subagents.md",
+        "https://docs.openclaw.ai/concepts/agent-workspace"
+      ],
+      "changelog_keywords": [
+        "sub-agent",
+        "subagent",
+        "spawn",
+        "orchestrator",
+        "multi-agent",
+        "maxSpawnDepth",
+        "maxConcurrency",
+        "sandbox",
+        "isolation",
+        "sessions_spawn"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "cli": {
+      "title": "CLI Quick Reference",
+      "skill_md_anchor": "8-cli-quick-reference",
+      "sources": [
+        "https://docs.openclaw.ai/cli",
+        "https://docs.openclaw.ai/gateway/configuration-reference.md"
+      ],
+      "changelog_keywords": [
+        "cli",
+        "command",
+        "flag",
+        "option",
+        "--",
+        "openclaw sessions",
+        "openclaw update",
+        "openclaw doctor",
+        "openclaw models",
+        "openclaw cron",
+        "openclaw gateway",
+        "openclaw plugins"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "ops_hygiene": {
+      "title": "Ops Hygiene Checklist",
+      "skill_md_anchor": "9-ops-hygiene-checklist",
+      "sources": [
+        "https://docs.openclaw.ai/gateway/configuration-reference.md",
+        "https://github.com/openclaw/openclaw/releases"
+      ],
+      "changelog_keywords": [
+        "breaking change",
+        "migration",
+        "deprecat",
+        "security",
+        "renamed",
+        "doctor --fix"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    },
+    "troubleshooting": {
+      "title": "Troubleshooting Reference",
+      "skill_md_anchor": "10-troubleshooting-reference",
+      "sources": [
+        "https://docs.openclaw.ai/troubleshooting",
+        "https://docs.openclaw.ai/gateway/troubleshooting",
+        "https://docs.openclaw.ai/help/troubleshooting",
+        "https://docs.openclaw.ai/automation/troubleshooting",
+        "https://docs.openclaw.ai/channels/troubleshooting",
+        "https://docs.openclaw.ai/nodes/troubleshooting",
+        "https://docs.openclaw.ai/tools/browser-linux-troubleshooting",
+        "https://docs.openclaw.ai/help/debugging",
+        "https://docs.openclaw.ai/gateway/doctor",
+        "https://docs.openclaw.ai/cli/doctor",
+        "https://docs.openclaw.ai/gateway/heartbeat",
+        "https://docs.openclaw.ai/gateway/authentication",
+        "https://docs.openclaw.ai/tools/exec-approvals",
+        "https://docs.openclaw.ai/tools/chrome-extension",
+        "https://docs.openclaw.ai/channels/pairing",
+        "https://docs.openclaw.ai/nodes/index"
+      ],
+      "changelog_keywords": [
+        "troubleshoot",
+        "error",
+        "fix",
+        "doctor",
+        "pairing",
+        "gateway startup",
+        "EADDRINUSE",
+        "RPC probe",
+        "NODE_BACKGROUND_UNAVAILABLE",
+        "SYSTEM_RUN_DENIED",
+        "PERMISSION_REQUIRED",
+        "browser",
+        "CDP",
+        "chrome",
+        "snap",
+        "channel flow",
+        "heartbeat skipped",
+        "cron disabled",
+        "allowlist",
+        "mention required",
+        "device identity",
+        "unauthorized",
+        "gateway connect failed",
+        "launchctl",
+        "exec-approvals",
+        "approval",
+        "no replies",
+        "debugging",
+        "raw-stream"
+      ],
+      "last_validated": "2026-02-24",
+      "last_validated_against": "2026.2.23"
+    }
+  }
+}
