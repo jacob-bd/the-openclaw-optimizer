@@ -68,13 +68,13 @@ A GitHub Actions workflow checks for new OpenClaw releases daily and opens an is
 Auto-detects your installed AI tools and installs to all of them:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jacob-bd/jbd-openclaw-optimizer/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh
 ```
 
 Or install to specific tools only:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jacob-bd/jbd-openclaw-optimizer/main/install.sh | sh -s -- --tools claude,openclaw
+curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh -s -- --tools claude,openclaw
 ```
 
 **Supported `--tools` values:** `claude`, `gemini`, `antigravity`, `opencode`, `openclaw`, `codex`, `goose`, `roo`, `cursor`, `cline`
@@ -82,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/jacob-bd/jbd-openclaw-optimizer/mai
 ### Option 2: Git Clone
 
 ```bash
-git clone https://github.com/jacob-bd/jbd-openclaw-optimizer.git
+git clone https://github.com/jacob-bd/the-openclaw-optimizer.git
 cd jbd-openclaw-optimizer
 cp -r openclaw-optimizer ~/.claude/skills/           # Claude Code
 cp -r openclaw-optimizer ~/.openclaw/workspace/skills/ # OpenClaw

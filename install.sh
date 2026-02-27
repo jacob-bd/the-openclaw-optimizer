@@ -1,16 +1,16 @@
 #!/bin/sh
 # OpenClaw Optimizer - One-liner Installer
-# https://github.com/jacob-bd/jbd-openclaw-optimizer
+# https://github.com/jacob-bd/the-openclaw-optimizer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/jacob-bd/jbd-openclaw-optimizer/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/jacob-bd/the-openclaw-optimizer/main/install.sh | sh
 #   sh install.sh --help
 #   sh install.sh --tools claude,openclaw
 #
 
 set -e
 
-REPO_URL="https://github.com/jacob-bd/jbd-openclaw-optimizer"
+REPO_URL="https://github.com/jacob-bd/the-openclaw-optimizer"
 TARBALL_URL="${REPO_URL}/archive/refs/heads/main.tar.gz"
 SKILL_FOLDER="openclaw-optimizer"
 
@@ -228,7 +228,7 @@ download_via_curl() {
         die "Failed to extract downloaded archive."
 
     EXTRACTED_DIR=""
-    for dir in "$TEMP_DIR"/jbd-openclaw-optimizer-*; do
+    for dir in "$TEMP_DIR"/the-openclaw-optimizer-*; do
         if [ -d "$dir" ]; then
             EXTRACTED_DIR="$dir"
             break
@@ -300,7 +300,7 @@ show_summary() {
     echo "  The systems directory (~/.openclaw-optimizer/systems/) will be"
     echo "  created automatically on first run."
     echo ""
-    echo "  Docs: https://github.com/jacob-bd/jbd-openclaw-optimizer"
+    echo "  Docs: https://github.com/jacob-bd/the-openclaw-optimizer"
     echo ""
 }
 
