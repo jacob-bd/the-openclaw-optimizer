@@ -2,7 +2,7 @@
 
 ![OpenClaw Optimizer Banner](assets/banner.png)
 
-**Skill v1.15.0** | Aligned with OpenClaw v2026.2.26 | CLI-first advisor
+**Skill v1.16.0** | Aligned with OpenClaw v2026.2.26 | CLI-first advisor
 
 An AI skill that turns your OpenClaw setup from "it works, I think" into a tuned, cost-efficient, self-documenting system. It audits what you have, tells you exactly what to change, shows you the rollback command before you commit, and remembers everything it learns about your deployment -- permanently, across sessions, across tools.
 
@@ -37,6 +37,8 @@ The identity audit catches all of it: structural issues, misplaced content, over
 ### It Remembers Your Deployment
 
 Every session, the skill reads a deployment profile before it starts working. That profile contains your topology, IPs, SSH access, provider config, cron inventory, past issues, and lessons learned. When you fix a problem, the fix gets logged. Next time -- even months later, even from a different AI tool -- the skill already knows the answer.
+
+**New in v1.16.0:** Profiles now support a **directory format** that splits the monolith into topic files (`topology.md`, `providers.md`, `routing.md`, `channels.md`, `cron.md`, `lessons.md`, `issues/`). Only a lightweight `INDEX.md` (~1K tokens) loads at session start -- topic files load on-demand. This cuts session-start context cost by 90%+ for mature deployments. Legacy single-file profiles still work.
 
 Profiles are stored in `~/.openclaw-optimizer/systems/`, outside git, shared across Claude Code, OpenClaw, and Gemini CLI on the same machine. Cross-machine sync via SCP.
 
@@ -187,7 +189,7 @@ The skill is 13 sections of operational knowledge, 4 reference files, and a self
 | 8 | CLI Reference | Common commands, safe gateway restart, `onboard --reset` scope changes |
 | 9 | Ops Hygiene Checklist | Daily/weekly/quarterly checklists, mandatory system assessment protocol |
 | 10 | Troubleshooting | Symptom lookup table, triage sequence, remote Ollama fix, event loop overload, context bloat cascade |
-| 11 | System Learning | Deployment profiles, first-run bootstrap, session lifecycle, centralized storage |
+| 11 | System Learning | Deployment profiles (directory + legacy), on-demand topic loading, issue lifecycle, centralized storage |
 | 12 | Continuous Improvement | Self-update triggers, versioning, self-audit checklist |
 | 13 | Agent Identity Optimizer | 36-check audit, file role definitions, interactive walkthrough with diffs and backups |
 
@@ -228,9 +230,19 @@ openclaw-optimizer/             # The skill (copy this directory to install)
 
 ~/.openclaw-optimizer/          # CENTRALIZED (not in git)
   systems/
-    TEMPLATE.md                 # Deployment profile template
-    my-home-lab.md              # Example: home network deployment
-    <deployment-id>.md          # One file per deployment
+    TEMPLATE.md                 # Deployment profile template (directory format)
+    <deployment-id>/            # Directory format (preferred)
+      INDEX.md                  # Always-loaded summary (~1K tokens)
+      topology.md               # Machines, network, paired devices
+      providers.md              # Active and removed providers
+      routing.md                # Model routing, fallbacks, heartbeat
+      channels.md               # Telegram, WhatsApp, delivery queue
+      cron.md                   # Full cron job inventory
+      lessons.md                # Permanent lessons learned
+      issues/
+        YYYY-MM.md              # Monthly issue files
+        archive.md              # Compressed summaries (14+ days old)
+    <deployment-id>.md          # Legacy single-file format (still supported)
 ```
 
 ---

@@ -2,6 +2,17 @@
 
 All notable changes to the OpenClaw Optimizer skill are documented here.
 
+## 1.16.0 — 2026-02-28
+
+- **Directory-based system profiles**: Split monolith profiles into topic files with on-demand loading
+- New profile format: `INDEX.md` (~1K tokens) loads at session start; `topology.md`, `providers.md`, `routing.md`, `channels.md`, `cron.md`, `lessons.md`, and `issues/YYYY-MM.md` load only when needed
+- 90%+ reduction in session-start context cost for mature deployments
+- Legacy single-file format fully supported (backwards compatible)
+- Issue lifecycle: monthly issue files, 14-day archive compression, permanent lessons
+- Updated TEMPLATE.md with directory-based structure and templates for all topic files
+- Session workflow updated: directory-first detection with single-file fallback
+- On-demand loading guidance: which file to read for each type of task
+
 ## 1.9.0 — 2026-02-25
 
 - **Agent Identity Optimizer** (Section 13): 36-check audit for SOUL.md, IDENTITY.md, AGENTS.md, USER.md and supporting bootstrap files
