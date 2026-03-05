@@ -1,7 +1,7 @@
 ---
-name: openclaw-optimizer
-slug: openclaw-optimizer
-version: 2026.2.27
+name: jbd-openclaw-optimizer
+slug: jbd-openclaw-optimizer
+version: 2026.3.2
 description: |
   Use when: you want to optimize an OpenClaw setup (v2026.2.23+) — cost reduction, model routing,
   provider configuration, context management, cron automation, sub-agent architecture, skills,
@@ -44,9 +44,9 @@ metadata:
     emoji: "🧰"
 ---
 
-# OpenClaw Optimizer
+# JBD OpenClaw Optimizer
 
-**Aligned with: OpenClaw v2026.2.26** | Skill v1.16.0 | Updated: 2026-02-27 | CLI-first advisor
+**Aligned with: OpenClaw v2026.3.2** | Skill v1.17.0 | Updated: 2026-03-03 | CLI-first advisor
 
 Optimize and troubleshoot OpenClaw workspaces: cost-aware routing, provider configuration, context discipline, lean automation, multi-agent architectures, and error resolution.
 
@@ -68,7 +68,7 @@ This skill tracks OpenClaw releases via two mechanisms:
 ### Runtime Check (once per session)
 
 ```bash
-python3 ~/.claude/skills/openclaw-optimizer/scripts/version-check.py --status
+python3 ~/.claude/skills/jbd-openclaw-optimizer/scripts/version-check.py --status
 ```
 
 - **`CURRENT`** → note the version and proceed.
@@ -79,11 +79,11 @@ python3 ~/.claude/skills/openclaw-optimizer/scripts/version-check.py --status
 
 ```bash
 # Show drift report, changelog, and affected sections
-bash ~/.claude/skills/openclaw-optimizer/scripts/update-skill.sh
+bash ~/.claude/skills/jbd-openclaw-optimizer/scripts/update-skill.sh
 
 # After updating content in SKILL.md and references/:
-bash ~/.claude/skills/openclaw-optimizer/scripts/update-skill.sh --apply    # bump versions
-bash ~/.claude/skills/openclaw-optimizer/scripts/update-skill.sh --commit   # bump + commit + push
+bash ~/.claude/skills/jbd-openclaw-optimizer/scripts/update-skill.sh --apply    # bump versions
+bash ~/.claude/skills/jbd-openclaw-optimizer/scripts/update-skill.sh --commit   # bump + commit + push
 ```
 
 Updates are deliberate — this skill never auto-modifies its own content or pushes to git without explicit user action.
@@ -158,7 +158,7 @@ Three backup layers exist — don't stack manual backups on top unnecessarily:
 | **Kilo Gateway** | `kilocode` | `KILOCODE_API_KEY` | `kilocode/anthropic/claude-opus-4.6` |
 | Moonshot/Kimi | `moonshot` | `MOONSHOT_API_KEY` | `moonshot/kimi-k2.5` |
 | Z.AI / GLM | `zai` | `ZAI_API_KEY` | `zai/glm-5` |
-| MiniMax | `minimax` | `MINIMAX_API_KEY` | `minimax/MiniMax-M2.1` |
+| MiniMax | `minimax` | `MINIMAX_API_KEY` | `minimax/MiniMax-M2.5-highspeed` |
 | Venice AI | `venice` | `VENICE_API_KEY` | `venice/llama-3.3-70b` |
 | Synthetic | `synthetic` | `SYNTHETIC_API_KEY` | `synthetic/hf:MiniMaxAI/MiniMax-M2.1` |
 | Ollama (local) | `ollama` | `OLLAMA_API_KEY` (any) | `ollama/llama3.3` |
@@ -310,6 +310,8 @@ openclaw models fallbacks add openrouter/anthropic/claude-sonnet-4-5
 ```
 
 **In-chat model switch (no restart):** `/model list` → `/model anthropic/claude-sonnet-4-5`
+
+> **Restart required for ALL config changes:** Adding models, adding/editing aliases, and editing `env.vars` all require a gateway restart to take effect. Do NOT tell the user "no restart needed" for any openclaw.json config change — always restart with `launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway` after applying changes.
 
 ---
 
@@ -621,7 +623,17 @@ openclaw secrets apply              # apply secrets with strict target-path vali
 openclaw agents bindings            # list account-scoped agent route bindings (v2026.2.26+)
 openclaw agents bind                # bind agent to channel account (v2026.2.26+)
 openclaw agents unbind              # unbind agent from channel account (v2026.2.26+)
+openclaw config validate            # validate config files before gateway startup (v2026.3.2+)
+openclaw config validate --json     # machine-readable validation output (v2026.3.2+)
 ```
+
+> **Node.js requirement (v2026.3.2):** Node.js **v22.12+** is now enforced at both installer and runtime bootstrap. Run `node --version` to check. If mismatched, use `nvm install 22` and ensure your shell PATH points to it before starting the gateway.
+
+> **Breaking changes (v2026.3.2):**
+> - **`tools.profile` default** — new local installs now default to `messaging` profile (not broad coding/system tools). Existing installs are unaffected. If you need coding tools on a fresh install, set `tools.profile: coding` explicitly.
+> - **ACP dispatch** — now enabled by default. To disable: `openclaw config set acp.dispatch.enabled false`.
+> - **Plugin SDK** — `api.registerHttpHandler(...)` removed. Custom plugins must use `api.registerHttpRoute({ path, auth, match, handler })`.
+> - **Zalo Personal plugin** — no longer depends on external `zca`-compatible CLI binaries. Run `openclaw channels login --channel zalouser` after upgrade to refresh sessions.
 
 > **`openclaw onboard --reset` scope change (v2026.2.26):** Default reset scope is now `config+creds+sessions`. Workspace deletion (bootstrap files, skills, memory) now requires `--reset-scope full`. Do NOT run `openclaw onboard --reset` without specifying `--reset-scope` explicitly — the default no longer wipes the workspace.
 
@@ -692,6 +704,8 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.gateway.plis
 
 Always check `gateway.err.log` first when troubleshooting — it contains only errors and warnings, making root cause identification much faster than grepping the main log.
 
+> **Log timestamps (v2026.3.2+):** Logs now use **local time** (previously UTC). When correlating log entries with system events or cron schedules, timestamps reflect your local timezone — no conversion needed.
+
 **First — always run this triage sequence:**
 ```bash
 openclaw status
@@ -726,6 +740,7 @@ tail -50 ~/.openclaw/logs/gateway.err.log | grep -v DEP0040   # skip Node deprec
 | Provider removal didn't stop probes | Check all 6 locations in Provider Removal Checklist | Stale auth-profiles.json, launchctl env, or plist env vars. See Section 1. |
 | `config unset` fails on auth profile keys | Edit JSON directly | Colons in keys break the config path parser. Use python3/jq. |
 | `models status --probe` mass timeouts | Test individual providers with `curl` | Probe contention — 16+ simultaneous targets saturate the event loop. Not real failures. |
+| Provider returns HTTP `529` | `openclaw logs --follow` | Previously misclassified as a hard error — now treated as `rate_limit` (v2026.3.2+), triggering model failover automatically. Common with Anthropic-compatible APIs under load. |
 
 ### 10a. Remote Ollama on macOS (Known Bug Workaround)
 
@@ -851,7 +866,7 @@ This skill maintains **system profiles** — persistent knowledge files that cap
 
 **Directory:** `~/.openclaw-optimizer/systems/` — one profile per deployment, plus `TEMPLATE.md` for new deployments. This is a **centralized location outside the skill directory** so that: (1) system profiles are never accidentally pushed to git, (2) multiple AI tools (Claude Code, OpenClaw, Gemini CLI, etc.) on the same machine can read/write the same profiles without drift. Cross-machine sync is still manual via SCP.
 
-**Deployment ID:** Each deployment has a unique slug (e.g., `my-home`, `prod-cluster-east`, `dev-standalone`).
+**Deployment ID:** Each deployment has a unique slug (e.g., `jbd-home`, `prod-cluster-east`, `dev-standalone`).
 
 **Profile formats (two supported):**
 - **Directory format (preferred):** `~/.openclaw-optimizer/systems/<deployment-id>/` — directory containing `INDEX.md` (always-loaded summary, ~1-4K tokens) plus topic files loaded on-demand. Dramatically reduces session-start context cost.
@@ -980,7 +995,7 @@ This skill is a living document. Every troubleshooting session, every CLI intera
 5. **Sync to remote:** After updating, sync the skill and system profiles to any remote OpenClaw instances:
    ```bash
    # Sync SKILL.md (skill code — lives in the skill directory)
-   scp ~/.claude/skills/openclaw-optimizer/SKILL.md <user>@<host>:~/.openclaw/workspace/skills/openclaw-optimizer/SKILL.md
+   scp ~/.claude/skills/jbd-openclaw-optimizer/SKILL.md <user>@<host>:~/.openclaw/workspace/skills/jbd-openclaw-optimizer/SKILL.md
    # Sync system profiles — directory format (sync only changed files)
    scp ~/.openclaw-optimizer/systems/<deployment-id>/<changed-file> <user>@<host>:~/.openclaw-optimizer/systems/<deployment-id>/
    # Sync system profiles — legacy single-file format
