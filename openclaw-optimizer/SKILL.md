@@ -456,6 +456,70 @@ openclaw config set cron.maxConcurrentRuns 1   # circuit breaker
 
 ---
 
+### Cron Deep Audit
+
+**Trigger:** Any time the user asks for a cron review, cron analysis, cron check, or cron troubleshooting. This is NOT optional — always run the full checklist. Shallow analysis that misses delivery config, env vars, or script dependencies is a failure.
+
+**Step 1: Pull the full job inventory**
+
+```bash
+cat ~/.openclaw/cron/jobs.json
+```
+
+Read every field of every job. Do NOT rely on `openclaw cron list` alone — it omits critical fields.
+
+**Step 2: For each job, verify all of the following:**
+
+**Schedule**
+- [ ] `enabled` — is the job actually enabled? (disabled jobs silently never run)
+- [ ] `schedule.expr` — is the cron expression correct for the intended frequency?
+- [ ] `schedule.tz` — is the timezone correct? (wrong tz = job fires at wrong local time)
+- [ ] `schedule.staggerMs` — is the stagger intentional? (stagger delays fire time by up to N ms)
+
+**Model**
+- [ ] `payload.model` — is the model still in the routing table / still valid?
+- [ ] Is the model cost-appropriate? (T1 cheap models for cron/monitoring, not premium)
+- [ ] Is the model reliable enough for this job? (flaky models = silent failures)
+
+**Delivery — CRITICAL, check every field**
+- [ ] `delivery.mode` — is it `"none"`, `"announce"`, or `"webhook"`? **`"none"` means no output is ever delivered anywhere.** Confirm this is intentional, not accidental.
+- [ ] If `mode` is NOT `"none"`: what is the delivery target (`to`, `channel`, `accountId`)? Is the target ID correct and still active?
+- [ ] If the job posts via curl/script directly (not via delivery): confirm the script has the correct bot token, chat IDs, and that the env vars it references are actually defined in `openclaw.json → env.vars`
+
+**Payload**
+- [ ] Does the payload message reference any skills, tools, or MCP servers? If so, are they still installed and accessible in an isolated session?
+- [ ] Does the payload use any env vars (e.g., `${TELEGRAM_BOT_TOKEN}`)? Verify each one exists in `env.vars` — undefined env vars silently become empty strings in curl commands.
+- [ ] Does the payload reference any scripts or files? Verify those files exist at the expected paths on the gateway.
+- [ ] Is the payload still accurate? (outdated prompts referencing removed workflows or deprecated tools)
+- [ ] `payload.timeoutSeconds` — is the timeout long enough for what the job actually does?
+
+**Session**
+- [ ] `sessionTarget` — `"isolated"` (recommended) vs `"main"` (injects into live session, can disrupt ongoing work)
+- [ ] `agentId` — is the assigned agent still configured and active?
+
+**Execution history**
+- [ ] `openclaw cron status` — when did the job last run? Did it succeed?
+- [ ] Check `~/.openclaw/delivery-queue/failed/` — are there failed delivery entries from this job?
+- [ ] Check `~/.openclaw/logs/gateway.log` for cron.run entries — look for `✗` (failure) vs `✓` (success) and note duration
+
+**Cross-job conflicts**
+- [ ] Do any jobs share overlapping schedules? (combined with `maxConcurrentRuns: 1` = one blocks the other)
+- [ ] Are any jobs redundant — doing the same work as another job or a built-in OpenClaw feature?
+
+**Step 3: Report findings**
+
+For each job, produce a one-line status summary:
+
+```
+[JOB NAME] | schedule: ok/issue | model: ok/issue | delivery: ok/NONE/issue | payload: ok/issue | last run: ok/never/failed
+```
+
+Flag any `delivery: NONE` explicitly — require the user to confirm it is intentional before closing the review.
+
+Flag any undefined env vars, missing scripts, or invalid channel IDs as blockers before the next run.
+
+---
+
 ## 5. Skills & Plugins
 
 **`metadata.openclaw.requires`** — gates skill visibility:
