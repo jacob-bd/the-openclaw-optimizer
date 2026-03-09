@@ -2,7 +2,7 @@
 
 ![OpenClaw Optimizer Banner](assets/banner.png)
 
-**Skill v1.18.0** | Aligned with OpenClaw v2026.2.26 | CLI-first advisor
+**Skill v1.19.0** | Aligned with OpenClaw v2026.3.8 | CLI-first advisor
 
 An AI skill that turns your OpenClaw setup from "it works, I think" into a tuned, cost-efficient, self-documenting system. It audits what you have, tells you exactly what to change, shows you the rollback command before you commit, and remembers everything it learns about your deployment -- permanently, across sessions, across tools.
 
@@ -32,9 +32,9 @@ This skill finds all of that. Then it fixes it -- but only when you say so.
 
 Not every request needs Opus. The skill builds a 4-tier routing plan that sends heartbeats and cron to the cheapest models, daily tasks to mid-tier, and reserves premium models for coding and orchestration. Exact config and rollback commands included.
 
-### 29 Model Providers, Ready to Go
+### 40+ Model Providers, Ready to Go
 
-Anthropic, OpenAI, OpenAI Codex (subscription-based OAuth), Google, Moonshot/Kimi, KiloCode, Groq, xAI, OpenRouter, Bedrock, Ollama, vLLM, MiniMax, Venice, Z.AI, Synthetic, and more. Each with the exact CLI commands to authenticate, configure, and add to your fallback chain.
+Anthropic, OpenAI, OpenAI Codex (subscription-based OAuth with GPT-5.4), Google Gemini, Moonshot/Kimi, Kimi Coding, KiloCode, Groq, xAI, OpenRouter, Bedrock, Together AI, Cerebras, Hugging Face, Ollama, vLLM, MiniMax, Venice, Z.AI, Synthetic, and more. Each with the exact CLI commands to authenticate, configure, and add to your fallback chain. Includes provider ban warnings for Google (AntiGravity/Gemini CLI) and Anthropic (Claude Code tokens).
 
 ### 36-Check Agent Identity Audit
 
@@ -187,14 +187,14 @@ The skill is 13 sections of operational knowledge, 4 reference files, and a self
 
 | # | Section | What It Covers |
 |---|---------|---------------|
-| 1 | Model Providers | 29 providers, auth commands, slug lookup, OAuth walkthrough, provider removal checklist |
-| 2 | Model Routing Strategy | 4-tier routing (T1-T4), per-agent config, model-to-task mapping, caching rules |
-| 3 | Context Management | Bootstrap file targets, compaction tuning, MEMORY.md bloat prevention, session cleanup |
-| 4 | Cron & Automation | Job schema, silent patterns (NO_REPLY, HEARTBEAT_OK), known bugs and fixes |
-| 5 | Skills & Plugins | Filesystem paths, metadata requirements, ClawHub, security warnings |
-| 6 | Multi-Agent Architecture | Sub-agents, nesting config, sandbox isolation, orchestrator patterns |
-| 7 | High-ROI Optimization Levers | Top 10 levers ranked by impact with exact implementation steps |
-| 8 | CLI Reference | Common commands, safe gateway restart, `onboard --reset` scope changes |
+| 1 | Model Providers | 40+ providers, auth commands, slug lookup, OAuth walkthrough, provider removal checklist |
+| 2 | Model Routing Strategy | 4-tier routing (T1-T4), thinking levels, model aliases, session pruning, caching rules |
+| 3 | Context Management | Context Engine plugins, light bootstrap, compaction model override, MEMORY.md bloat prevention |
+| 4 | Cron & Automation | Job schema, silent patterns, light-context, defer-while-active, restart staggering |
+| 5 | Skills & Plugins | Plugin slots (context engine, memory), ClawHub, security warnings |
+| 6 | Multi-Agent Architecture | Sub-agents, ACP dispatch, sandbox isolation, single-agent-with-skills pattern |
+| 7 | High-ROI Optimization Levers | 16 levers ranked by impact with exact implementation steps |
+| 8 | CLI Reference | Common commands, backup create/verify, in-chat commands, env vars, safe gateway restart |
 | 9 | Ops Hygiene Checklist | Daily/weekly/quarterly checklists, mandatory system assessment protocol |
 | 10 | Troubleshooting | Symptom lookup table, triage sequence, remote Ollama fix, event loop overload, context bloat cascade |
 | 11 | System Learning | Deployment profiles (directory + legacy), on-demand topic loading, issue lifecycle, centralized storage |
@@ -202,7 +202,7 @@ The skill is 13 sections of operational knowledge, 4 reference files, and a self
 | 13 | Agent Identity Optimizer | 36-check audit, file role definitions, interactive walkthrough with diffs and backups |
 
 **Reference files:**
-- `references/providers.md` -- all 29 providers, custom provider schema, failover config
+- `references/providers.md` -- all 40+ providers, custom provider schema, failover config
 - `references/troubleshooting.md` -- full error reference, 7 failure categories, GitHub issue workarounds
 - `references/cli-reference.md` -- complete CLI command reference
 - `references/identity-optimizer.md` -- 36-check audit checklist, file roles, walkthrough workflow
@@ -226,7 +226,7 @@ openclaw-optimizer/             # The skill (copy this directory to install)
   systems/
     TEMPLATE.md                 # Template for new deployments (copied on first run)
   references/
-    providers.md                # All 29 providers, custom provider schema
+    providers.md                # All 40+ providers, custom provider schema
     troubleshooting.md          # Full error reference, 7 failure categories
     cli-reference.md            # Complete CLI command reference
     identity-optimizer.md       # Agent identity/personality audit (36 checks)

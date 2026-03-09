@@ -3,7 +3,7 @@
 
 ---
 
-## Provider Quick Reference (All 29)
+## Provider Quick Reference (All 40+)
 
 | Provider | Slug | Auth Env Var | Model Format | Notes |
 |---|---|---|---|---|
