@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — Troubleshooting Reference
-# Aligned with OpenClaw v2026.3.7 | Source: docs.openclaw.ai/troubleshooting + GitHub Issues
+# Aligned with OpenClaw v2026.3.8 | Source: docs.openclaw.ai/troubleshooting + GitHub Issues
 
 ## 10. Troubleshooting Reference
 
@@ -712,3 +712,32 @@ These are confirmed open issues with workarounds. Check GitHub for fix status be
 | #39611 — Control UI loses auth on navigation | WebSocket disconnects with "device identity required" on page navigation. Token persistence broken. | Avoid multi-page Control UI workflows until patched. |
 | #40410 — Config file wiped on gateway restart | `openclaw.json` gets wiped when gateway restarts. | Back up config before restarts as precaution. Filed March 9, 2026. |
 | #40434 — Ollama stuck "typing" forever | Local Ollama models stuck in "typing" state via Telegram. Multiple silent failure modes. | Filed March 9, 2026. Switch to non-Ollama model as workaround. |
+
+---
+
+### v2026.3.8 Fixes
+
+**Bug fixes:**
+
+| Area | Fix |
+|---|---|
+| macOS launchd | Re-enable disabled LaunchAgent services during `openclaw update` — previously left services disabled after update |
+| Telegram | DM routing deduplication — duplicate inbound messages no longer spawn parallel sessions |
+| GPT-5.4 | Context window corrected to 1,050,000 tokens (was previously reported lower) |
+| Bedrock | `Too many tokens per day` now classified as rate limit (429) for failover — previously treated as fatal |
+| Context engine | Registry bundled build fix — `globalThis` singleton for duplicate module copies (fixes #40096) |
+| Config | Runtime snapshots stay intact after config writes — no more silent snapshot clobber |
+| Gateway | Restart timeout recovery — non-zero exit for launchd/systemd so supervisor restarts the process |
+| Gateway | Config restart guard — validates config before service start/restart; prevents startup with broken config |
+| Podman | SELinux auto-detection with `:Z` relabel for Fedora/RHEL container volumes |
+| Cron | Restart staggering — limits immediate missed-job replay on startup; prevents burst of deferred jobs after downtime |
+
+**Security fixes:**
+
+| Area | Fix |
+|---|---|
+| Skills | Skill download validation hardening |
+| Scripts | Script approval binding hardening |
+| MS Teams | Authorization hardening — `groupPolicy` allowlist enforcement |
+| Browser | SSRF protection — block private-network redirect hops in browser navigation |
+| Exec | `system.run` approval binding for `bun`/`deno` run scripts |

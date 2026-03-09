@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — CLI Reference
-# Aligned with OpenClaw v2026.3.7 | Source: docs.openclaw.ai/cli
+# Aligned with OpenClaw v2026.3.8 | Source: docs.openclaw.ai/cli
 
 ---
 
@@ -95,6 +95,13 @@ openclaw update --channel beta                      # switch to beta channel
 openclaw update --channel stable                    # switch back to stable
 openclaw update status                              # check available updates
 openclaw --update                                   # shorthand
+
+# ── Backup ──────────────────────────────────────────────────────────────────
+openclaw backup create [--only-config] [--no-include-workspace]   # local state archive (v2026.3.8+)
+openclaw backup verify                                            # validate backup integrity (v2026.3.8+)
+
+# ── ACP ────────────────────────────────────────────────────────────────────
+openclaw acp --provenance off|meta|meta+receipt                   # ACP provenance control (v2026.3.8+)
 
 # ── Skills & Plugins ────────────────────────────────────────────────────────
 openclaw skills list                                # all skills
@@ -231,4 +238,5 @@ openclaw config set gateway.auth.mode token
 OPENCLAW_LOG_LEVEL=<level>         # override log level: silent|fatal|error|warn|info|debug|trace
 OPENCLAW_DIAGNOSTICS=<pattern>     # targeted debug logs (e.g., "telegram.*" or "*" for all)
 OPENCLAW_SHELL=<runtime>           # set across shell-like runtimes (exec, acp, tui-local)
+OPENCLAW_THEME=light|dark          # TUI theme override (v2026.3.8+)
 ```

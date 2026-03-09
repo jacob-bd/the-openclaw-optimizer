@@ -2,6 +2,24 @@
 
 All notable changes to the OpenClaw Optimizer skill are documented here.
 
+## 1.19.0 — 2026-03-09
+
+- **Aligned with OpenClaw v2026.3.8** (covers v2026.3.1 through v2026.3.8)
+- v2026.3.8: `openclaw backup create/verify` commands, ACP provenance control, cron restart staggering
+- v2026.3.8: GPT-5.4 via Codex (1,050,000-token context, 128K max tokens)
+- v2026.3.8: `OPENCLAW_THEME`, `browser.relayBindHost`, `talk.silenceTimeoutMs`, Brave LLM Context search
+- v2026.3.8: Security hardening (skill download validation, SSRF redirect hop blocking, MS Teams auth)
+- v2026.3.8: macOS launchd restart fix, gateway config restart guard, Podman SELinux auto-detection
+- Provider ban warnings: Google (AntiGravity + Gemini CLI), Anthropic (Claude Code tokens); Claude Code via ACP is OK
+- Community insights: single-agent-with-skills pattern, heartbeat cost optimization, bootstrap tier loading
+- Expanded provider table: 40+ providers (added Kimi Coding, Together AI, Cerebras, Hugging Face, MiniMax VL-01)
+- New optimization levers: light bootstrap, adaptive thinking, session pruning, cheaper compaction model, backup commands
+- New in-chat commands: /steer, /kill, /usage cost, /export-session, /session idle, /session max-age, /check-updates
+- New env vars: OPENCLAW_THEME (v2026.3.8), OPENCLAW_LOG_LEVEL, OPENCLAW_DIAGNOSTICS, OPENCLAW_SHELL
+- New troubleshooting entries: config file wipe (#40410), silent tool failure (#40069), compaction freeze (#38233), Ollama stuck typing (#40434)
+- CVE-2026-25253 (ClawJacked) security reference with mitigation guidance
+- Updated all 4 reference files to v2026.3.8
+
 ## 1.18.0 — 2026-03-09
 
 - **Aligned with OpenClaw v2026.3.7** (covers v2026.3.1, v2026.3.2, v2026.3.7)

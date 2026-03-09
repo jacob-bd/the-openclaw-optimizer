@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — Agent Identity Optimizer Reference
-# Aligned with OpenClaw v2026.3.7 | Updated: 2026-03-09 | Source: docs.openclaw.ai/concepts/system-prompt, docs.openclaw.ai/reference/token-use, docs.openclaw.ai/concepts/agent-workspace
+# Aligned with OpenClaw v2026.3.8 | Updated: 2026-03-09 | Source: docs.openclaw.ai/concepts/system-prompt, docs.openclaw.ai/reference/token-use, docs.openclaw.ai/concepts/agent-workspace
 
 ---
 

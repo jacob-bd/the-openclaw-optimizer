@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — Provider Reference
-# Aligned with OpenClaw v2026.3.7 | Source: docs.openclaw.ai/providers
+# Aligned with OpenClaw v2026.3.8 | Source: docs.openclaw.ai/providers
 
 ---
 
@@ -9,7 +9,7 @@
 |---|---|---|---|---|
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` | `anthropic/claude-opus-4-6` | Prompt caching; prefer direct for Opus/Sonnet |
 | OpenAI | `openai` | `OPENAI_API_KEY` | `openai/gpt-5.4` | Default `gpt` alias updated v2026.3.7 |
-| OpenAI Codex (OAuth) | `openai-codex` | Device flow | `openai-codex/gpt-5.3-codex` | ChatGPT subscription |
+| OpenAI Codex (OAuth) | `openai-codex` | Device flow | `openai-codex/gpt-5.4` | ChatGPT subscription; 1,050K ctx / 128K max out |
 | Google Gemini | `google` | `GEMINI_API_KEY` | `google/gemini-3-pro-preview` | 1M context Flash variant |
 | Google Gemini 3.1 Flash-Lite | `google` | `GEMINI_API_KEY` | `google/gemini-3.1-flash-lite-preview` | New in v2026.3.7; ultra-cheap |
 | Google Vertex AI | `google-vertex` | gcloud ADC | — | `gcloud auth application-default login` |
@@ -38,6 +38,14 @@
 | OpenCode Zen | `opencode` | `OPENCODE_API_KEY` | `opencode/claude-opus-4-6` | Beta; uses Kilo infra |
 | GitHub Copilot | `github-copilot` | `COPILOT_GITHUB_TOKEN` | `github-copilot/gpt-4o` | ChatGPT subscription via device flow |
 | Cerebras | `cerebras` | `CEREBRAS_API_KEY` | `cerebras/zai-glm-4.7` | — |
+
+---
+
+## Provider Ban Warnings
+
+> **Google:** Google has historically flagged accounts using Gemini API keys through third-party orchestration layers. Use `google-vertex` (gcloud ADC) for production workloads where account safety is a concern.
+
+> **Anthropic (v2026.3.8):** Anthropic has banned users linking flat-rate Claude Code subscription tokens to OpenClaw. Using Claude Code through ACP dispatch (Agent SDK) is the supported pattern and should not cause issues. Do NOT pass a Claude Code subscription API key directly as `ANTHROPIC_API_KEY` for OpenClaw — use a standard Anthropic API key or route through ACP.
 
 ---
 
