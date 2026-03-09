@@ -1,9 +1,9 @@
 # OpenClaw Optimizer — Troubleshooting Reference
-# Aligned with OpenClaw v2026.2.26 | Source: docs.openclaw.ai/troubleshooting + GitHub Issues
+# Aligned with OpenClaw v2026.3.7 | Source: docs.openclaw.ai/troubleshooting + GitHub Issues
 
 ## 10. Troubleshooting Reference
 
-> Source pages fetched: docs.openclaw.ai/troubleshooting, /gateway/troubleshooting, /help/troubleshooting, /automation/troubleshooting, /channels/troubleshooting, /nodes/troubleshooting, /tools/browser-linux-troubleshooting, /help/debugging, /gateway/doctor, /cli/doctor — last pulled 2026-02-24.
+> Source pages fetched: docs.openclaw.ai/troubleshooting, /gateway/troubleshooting, /help/troubleshooting, /automation/troubleshooting, /channels/troubleshooting, /nodes/troubleshooting, /tools/browser-linux-troubleshooting, /help/debugging, /gateway/doctor, /cli/doctor — last pulled 2026-03-09.
 
 ---
 
@@ -17,6 +17,7 @@ openclaw gateway status
 openclaw doctor
 openclaw channels status --probe
 openclaw logs --follow
+openclaw config validate --json     # pre-startup config check (v2026.3.2+)
 ```
 
 **Expected healthy output for each:**
@@ -140,6 +141,7 @@ openclaw channels status --probe
 | `Gateway start blocked: set gateway.mode=local` | `gateway.mode` is unset or set to "remote" | `openclaw config set gateway.mode local` — For Podman/openclaw user: config location is `~openclaw/.openclaw/openclaw.json` |
 | `refusing to bind gateway ... without auth` | Non-loopback bind (`lan`, `tailnet`, `custom`) requires a token or password | Set `gateway.auth.token` before binding to non-loopback |
 | `another gateway instance is already listening` / `EADDRINUSE` | Port 18789 (default) is already occupied | Check `openclaw doctor` for port collision detection; kill the conflicting process or change the gateway port |
+| `Gateway start blocked: set gateway.auth.mode` | Both `gateway.auth.token` AND `gateway.auth.password` are set but `gateway.auth.mode` is missing | `openclaw config set gateway.auth.mode token` (or `password`) — **required** in v2026.3.7 when both are configured |
 
 **Post-upgrade: service config and runtime disagree**
 
@@ -602,6 +604,27 @@ Use after upgrades to catch post-upgrade allowlist rejections (e.g., `@username`
 
 ---
 
+### Container Health Endpoints (v2026.3.1+)
+
+Built-in HTTP endpoints for Docker/Kubernetes health checks:
+
+```
+GET /health    → 200 OK (liveness)
+GET /healthz   → 200 OK (liveness)
+GET /ready     → 200 OK + channel status (readiness)
+GET /readyz    → 200 OK + channel status (readiness)
+```
+
+Use in Dockerfile: `HEALTHCHECK CMD curl -f http://localhost:18789/healthz || exit 1`
+
+---
+
+### Config Fail-Closed (v2026.3.2+)
+
+Invalid configs no longer silently fall back to permissive defaults. `loadConfig()` errors now cause the gateway to fail startup with detailed error paths. Run `openclaw config validate --json` before restarting to catch issues.
+
+---
+
 ### Quick Fixes by Symptom
 
 | Symptom | First Command to Run | Most Likely Fix |
@@ -617,7 +640,7 @@ Use after upgrades to catch post-upgrade allowlist rejections (e.g., `@username`
 | "RPC probe: failed" | `openclaw gateway status --deep` | Auth token mismatch or port conflict |
 | Post-upgrade broken config | `openclaw doctor --fix` | Automatic config migration |
 
-### Known Active Bugs (GitHub Issues — v2026.2.23)
+### Known Active Bugs (GitHub Issues — v2026.3.7)
 
 These are confirmed open issues with workarounds. Check GitHub for fix status before applying patches.
 
@@ -666,3 +689,26 @@ These are confirmed open issues with workarounds. Check GitHub for fix status be
 | #25902 — Cron skips current day | Job set for 06:00, gateway starts at 05:01, `nextRunAtMs` schedules for next day | `openclaw gateway restart` after jobs were expected to fire to force recompute |
 
 ---
+
+**Security:**
+
+|| Issue | Symptom | Workaround |
+||---|---|---|
+|| CVE-2026-25253 — ClawJacked | Malicious websites hijack locally-running gateways via WebSocket localhost brute-force. 42,000+ instances affected. | Update to v2026.2.26+ (patched), v2026.3.2+ (hardened). Audit device pairings. |
+
+**Tools (v2026.3.7):**
+
+| Issue | Symptom | Workaround |
+|---|---|---|
+| #40069 — Silent tool execution failure | Agent claims to invoke tools (read, write, exec, sessions_spawn) but no actual tool calls are made. No errors. | **Model-specific.** Confirmed with `kimi-coding/k2p5`. Switch to a different model. Fix PR #40150. |
+| #38233 — Compaction timeout freezes sessions | Both manual `/compact` and auto compaction timeout at ~300s, leaving session frozen. Affects `openai-codex/gpt-5.3-codex`. | Override compaction model: `"compaction": { "model": "google/gemini-3-flash-preview", "thinking": "off" }`. Tune: `maxHistoryShare: 0.6`, `reserveTokensFloor: 40000`, `maxAttempts: 3`. |
+| #40433 — Anthropic sanitize-on-retry loop | Sanitize-on-retry strips `tool_use` blocks but leaves orphaned `tool_result` blocks, causing a second 400 error loop. | Monitor; no workaround yet. Filed March 9, 2026. |
+| #32533 — Fallback doesn't escalate on outage | During Anthropic outage, OpenClaw retried alternate auth profiles instead of escalating to configured fallback providers. All requests failed ~2 hours. | Fix PRs #32593, #32669, #32883 submitted. Test fallback chains before next outage. |
+
+**Gateway (v2026.3.7):**
+
+| Issue | Symptom | Workaround |
+|---|---|---|
+| #39611 — Control UI loses auth on navigation | WebSocket disconnects with "device identity required" on page navigation. Token persistence broken. | Avoid multi-page Control UI workflows until patched. |
+| #40410 — Config file wiped on gateway restart | `openclaw.json` gets wiped when gateway restarts. | Back up config before restarts as precaution. Filed March 9, 2026. |
+| #40434 — Ollama stuck "typing" forever | Local Ollama models stuck in "typing" state via Telegram. Multiple silent failure modes. | Filed March 9, 2026. Switch to non-Ollama model as workaround. |

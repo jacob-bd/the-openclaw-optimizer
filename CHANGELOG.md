@@ -2,6 +2,33 @@
 
 All notable changes to the OpenClaw Optimizer skill are documented here.
 
+## 1.18.0 — 2026-03-09
+
+- **Aligned with OpenClaw v2026.3.7** (covers v2026.3.1, v2026.3.2, v2026.3.7)
+- New providers: Google Gemini 3.1 Flash-Lite, MiniMax-VL-01, OpenAI gpt-5.4 default alias
+- Updated defaults: Venice → kimi-k2-5, MiniMax → M2.5-highspeed (M2.5-Lightning removed)
+- Ollama memory embeddings (`memorySearch.provider = "ollama"`)
+- ContextEngine plugin interface: `plugins.slots.contextEngine` and `lossless-claw` docs
+- Compaction model override, `recentTurnsPreserve`, `postCompactionSections` config keys
+- Bootstrap truncation warning: `bootstrapPromptTruncationWarning` config
+- Light bootstrap: `lightContext` for heartbeat and `--light-context` for cron
+- Cron defer-while-active: `cron.deferWhileActive.quietMs` skips main-session jobs when user is active
+- Adaptive thinking for Claude 4.6 (default `adaptive` level)
+- PDF tool config keys: `pdfModel`, `pdfMaxBytesMb`, `pdfMaxPages`
+- Sub-agent inline file attachments: `tools.sessions_spawn.attachments`
+- Breaking: `gateway.auth.mode` required when both token and password are set (v2026.3.7)
+- Breaking: `tools.profile` defaults to `messaging` for new installs (v2026.3.2)
+- Breaking: ACP dispatch defaults to enabled (v2026.3.2)
+- ClawJacked CVE-2026-25253 security reference
+- 10+ new known bugs: #40069, #38233, #40433, #32533, #39611, #40410, #40434 and more
+- New CLI: `config file`, `config validate`, `gateway run --log-level`, `--password-file`
+- New in-chat: `/session idle`, `/session max-age`, `/usage cost`, `/export-session`, `/steer`, `/kill`
+- New env vars: `OPENCLAW_LOG_LEVEL`, `OPENCLAW_DIAGNOSTICS`, `OPENCLAW_SHELL`
+- Container health endpoints: `/health`, `/healthz`, `/ready`, `/readyz`
+- Config fail-closed behavior (no more silent fallback to permissive defaults)
+- Node.js v22.12+ enforced
+- Updated all 4 reference files to v2026.3.7
+
 ## 1.16.0 — 2026-02-28
 
 - **Directory-based system profiles**: Split monolith profiles into topic files with on-demand loading

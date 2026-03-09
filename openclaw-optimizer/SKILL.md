@@ -1,7 +1,7 @@
 ---
 name: jbd-openclaw-optimizer
 slug: jbd-openclaw-optimizer
-version: 2026.3.2
+version: 2026.3.7
 description: |
   Use when: you want to optimize an OpenClaw setup (v2026.2.23+) — cost reduction, model routing,
   provider configuration, context management, cron automation, sub-agent architecture, skills,
@@ -46,7 +46,7 @@ metadata:
 
 # JBD OpenClaw Optimizer
 
-**Aligned with: OpenClaw v2026.3.2** | Skill v1.17.0 | Updated: 2026-03-03 | CLI-first advisor
+**Aligned with: OpenClaw v2026.3.7** | Skill v1.18.0 | Updated: 2026-03-09 | CLI-first advisor
 
 Optimize and troubleshoot OpenClaw workspaces: cost-aware routing, provider configuration, context discipline, lean automation, multi-agent architectures, and error resolution.
 
@@ -144,7 +144,7 @@ Three backup layers exist — don't stack manual backups on top unnecessarily:
 | Provider | Slug | Auth Env | Model Format |
 |---|---|---|---|
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` | `anthropic/claude-opus-4-6` |
-| OpenAI (API key) | `openai` | `OPENAI_API_KEY` | `openai/gpt-5.1-codex` |
+| OpenAI (API key) | `openai` | `OPENAI_API_KEY` | `openai/gpt-5.4` |
 | **OpenAI Codex (subscription)** | `openai-codex` | **ChatGPT OAuth** | `openai-codex/gpt-5.3-codex` |
 | Google Gemini | `google` | `GEMINI_API_KEY` | `google/gemini-3-pro-preview` |
 
@@ -159,7 +159,7 @@ Three backup layers exist — don't stack manual backups on top unnecessarily:
 | Moonshot/Kimi | `moonshot` | `MOONSHOT_API_KEY` | `moonshot/kimi-k2.5` |
 | Z.AI / GLM | `zai` | `ZAI_API_KEY` | `zai/glm-5` |
 | MiniMax | `minimax` | `MINIMAX_API_KEY` | `minimax/MiniMax-M2.5-highspeed` |
-| Venice AI | `venice` | `VENICE_API_KEY` | `venice/llama-3.3-70b` |
+| Venice AI | `venice` | `VENICE_API_KEY` | `venice/kimi-k2-5` |
 | Synthetic | `synthetic` | `SYNTHETIC_API_KEY` | `synthetic/hf:MiniMaxAI/MiniMax-M2.1` |
 | Ollama (local) | `ollama` | `OLLAMA_API_KEY` (any) | `ollama/llama3.3` |
 | vLLM (local) | `vllm` | `VLLM_API_KEY` (any) | `vllm/<model-id>` |
@@ -259,10 +259,10 @@ For providers with LaunchAgent env vars (Ollama, etc.), also clean:
 
 | Tier | Models | Use Cases |
 |---|---|---|
-| **T1 Cheap** | `zai/glm-5`, `google/gemini-3-flash-preview`, `synthetic/hf:deepseek-ai/DeepSeek-V3.2` | Heartbeats, simple checks, greetings, cron |
+| **T1 Cheap** | `zai/glm-5`, `google/gemini-3.1-flash-lite-preview`, `google/gemini-3-flash-preview`, `synthetic/hf:deepseek-ai/DeepSeek-V3.2` | Heartbeats, simple checks, greetings, cron |
 | **T2 Mid** | `moonshot/kimi-k2.5`, `minimax/MiniMax-M2.1` | Daily chat, Q&A, calendar, scheduling |
 | **T3 Smart** | `anthropic/claude-sonnet-4-5`, `openai/gpt-5.1-codex`, `openai-codex/gpt-5.3-codex` (subscription) | Code, refactors, research |
-| **T4 Premium** | `anthropic/claude-opus-4-6`, `openai/gpt-5.2` | Complex reasoning, orchestration |
+| **T4 Premium** | `anthropic/claude-opus-4-6`, `openai/gpt-5.4` | Complex reasoning, orchestration |
 
 **Model preference by task:**
 
@@ -280,6 +280,7 @@ For providers with LaunchAgent env vars (Ollama, etc.), also clean:
 - Never switch models mid-conversation — destroys Anthropic prompt cache
 - Use `anthropic` direct (not through proxies) to preserve caching for Opus/Sonnet
 - Switch only at session boundaries (`/new`)
+- Claude 4.6 defaults to `adaptive` thinking (v2026.3.1+) — auto-scales reasoning depth per task. Override per-agent with `thinkingDefault: "low"` to save tokens.
 
 ### Per-Agent Config
 
@@ -347,6 +348,17 @@ openclaw config set agents.defaults.contextTokens 100000
 }
 ```
 
+**New compaction controls (v2026.3.1+):**
+```bash
+openclaw config set agents.defaults.compaction.model google/gemini-3-flash-preview  # fast model for compaction (prevents timeout)
+openclaw config set agents.defaults.compaction.recentTurnsPreserve 4                # protect recent turns from compaction (v2026.3.7)
+openclaw config set agents.defaults.compaction.postCompactionSections "Session Startup,Red Lines"  # AGENTS.md sections re-injected after compaction (v2026.3.7)
+```
+
+> **Compaction timeout fix (Issue #38233):** `openai-codex/gpt-5.3-codex` can timeout during compaction, freezing the session. Override the compaction model to a fast provider: `"compaction": { "model": "google/gemini-3-flash-preview", "thinking": "off" }`. Also tune: `"maxHistoryShare": 0.6, "reserveTokensFloor": 40000, "maxAttempts": 3`.
+
+**ContextEngine plugin (v2026.3.7):** Pluggable context management via `plugins.slots.contextEngine`. First plugin: `lossless-claw` by Martian Engineering — DAG-based summarization that preserves all context (nothing permanently lost). Install: `openclaw plugins install @martian-engineering/lossless-claw`, then set `"plugins": { "slots": { "contextEngine": "lossless-claw" } }`. Zero behavior change when no plugin is configured.
+
 **Known bug — memory flush threshold gap (Issue #25880):** Set `reserveTokensFloor` equal to `reserveTokens` (both `62500`) to fix compaction firing before flush completes.
 
 ### Bootstrap File Size Targets (optimization recommendations)
@@ -362,6 +374,8 @@ These are optimization targets for keeping context lean, not hard limits. All fi
 | `USER.md` | < 1K tokens (~4K chars) | User profile, preferences, context | Always (main only) |
 | `HEARTBEAT.md` | < 200 tokens (~800 chars) | Heartbeat checklist (keep minimal) | Always (main only) |
 | `MEMORY.md` | < 5K tokens (~20K chars) | **Curated long-term facts ONLY** | **Always in main sessions (auto-injected when present)** |
+
+**Bootstrap truncation warning (v2026.3.7):** `agents.defaults.bootstrapPromptTruncationWarning` controls in-prompt warnings when files are truncated. Values: `off` | `once` (default) | `always`.
 
 **Critical:** MEMORY.md is auto-injected on every turn in main sessions, NOT loaded on-demand. It burns tokens continuously. Keep it as small as possible with only curated facts. Operational protocols belong in AGENTS.md. Tool notes belong in TOOLS.md.
 
@@ -427,6 +441,7 @@ openclaw cron enable/disable <job-id>
 openclaw cron rm <job-id>
 openclaw config set cron.sessionRetention 24h
 openclaw config set cron.maxConcurrentRuns 1   # circuit breaker
+openclaw config set cron.deferWhileActive.quietMs 300000  # skip main-session jobs when user is active (v2026.3.1+)
 ```
 
 ### Silent Patterns
@@ -442,6 +457,7 @@ openclaw config set cron.maxConcurrentRuns 1   # circuit breaker
     ackMaxChars: 300,
     directPolicy: "allow",   // "allow" (default in v2026.2.25+) | "block" — per-agent override also supported
     activeHours: { start: "08:00", end: "22:00", timezone: "America/New_York" },
+    lightContext: false,    // true = skip workspace bootstrap files, only load HEARTBEAT.md (v2026.3.1+)
   } } },
 }
 ```
@@ -449,6 +465,10 @@ openclaw config set cron.maxConcurrentRuns 1   # circuit breaker
 > **v2026.2.25 BREAKING:** The heartbeat DM toggle was replaced with `directPolicy`. Default is now `allow`. If you had DMs blocked in v2026.2.24, explicitly set `agents.defaults.heartbeat.directPolicy: "block"` (or per-agent via `agents.list[].heartbeat.directPolicy`).
 
 **Cost trap:** 5-minute heartbeat loading full MEMORY.md = ~2.9M tokens/day. Keep heartbeat context minimal.
+
+**Light bootstrap (v2026.3.1+):** Set `agents.*.heartbeat.lightContext: true` to skip all workspace bootstrap files during heartbeat — only HEARTBEAT.md is loaded. For cron, use `--light-context` flag on `cron add`/`cron edit` or set `payload.lightContext: true` in the job JSON. Massive token savings for monitoring-only jobs.
+
+**Cron defer-while-active (v2026.3.1+):** Main-session cron jobs silently skip when users are actively chatting (`cron.deferWhileActive.quietMs`, default 5 min quiet window). Reduces wasted API calls ~80%. Isolated jobs are never deferred. Skipped jobs return `status: "skipped", error: "session-active"` — no error tracking, no backoff.
 
 **Redundant cron jobs:** The built-in `openclaw memory` indexes sessions natively. Custom session archiver cron jobs that convert `.jsonl` to markdown for a separate RAG database are likely redundant. Check whether any cron job feeds a custom system that duplicates built-in functionality before assuming it's needed.
 
@@ -552,6 +572,10 @@ openclaw skills check            # validate requirements
 
 **Session watcher:** Skills snapshot at session start. If `skills.load.watch` is disabled, start a new session after installing.
 
+**ContextEngine plugin slot (v2026.3.7):** `plugins.slots.contextEngine` — allows third-party plugins to replace the built-in context/compaction engine. First plugin: `lossless-claw` (DAG-based summarization). See Section 3 for setup.
+
+**Plugin prompt injection (v2026.3.7):** `plugins.entries.<id>.hooks.allowPromptInjection` — controls whether plugin hooks can inject into the system prompt. `prependSystemContext` / `appendSystemContext` fields provide cache-friendly static plugin guidance.
+
 ---
 
 ## 6. Multi-Agent & Sub-Agent Architecture
@@ -583,6 +607,8 @@ openclaw skills check            # validate requirements
   tools: { profile: "minimal", deny: ["exec", "browser"] } }] } }
 ```
 
+**Inline file attachments (v2026.3.2+):** `sessions_spawn` supports base64/utf8 file attachments. Configure limits via `tools.sessions_spawn.attachments`. Transcript content is redacted; files are cleaned up at lifecycle end.
+
 ---
 
 ## 7. High-ROI Optimization Levers
@@ -599,6 +625,10 @@ openclaw skills check            # validate requirements
 | **Isolated cron sessions** | Zero context contamination | `sessionTarget: "isolated"` on all cron jobs |
 | **Gateway security** | Prevents exposure | `gateway.bind: loopback`; Tailscale for remote |
 | **Never switch mid-session** | Preserves prompt cache | Only switch model at `/new` boundaries |
+| **Light bootstrap for cron/heartbeat** | 90%+ token reduction per automated turn | `lightContext: true` skips all workspace files for heartbeat; `--light-context` for cron |
+| **Cron defer-while-active** | ~80% fewer wasted cron API calls | Main-session jobs skip when user is chatting; `cron.deferWhileActive.quietMs: 300000` |
+| **Compaction model override** | Prevents compaction timeout freezes | `compaction.model: "google/gemini-3-flash-preview"` with `thinking: "off"` |
+| **ContextEngine plugins** | Zero context loss during compaction | `lossless-claw` uses DAG-based summarization; install via plugins |
 
 ---
 
@@ -625,6 +655,8 @@ openclaw agents bind                # bind agent to channel account (v2026.2.26+
 openclaw agents unbind              # unbind agent from channel account (v2026.2.26+)
 openclaw config validate            # validate config files before gateway startup (v2026.3.2+)
 openclaw config validate --json     # machine-readable validation output (v2026.3.2+)
+openclaw config file                # print active config file path (v2026.3.1+)
+openclaw config file --absolute     # full path without ~ shorthand (v2026.3.1+)
 ```
 
 > **Node.js requirement (v2026.3.2):** Node.js **v22.12+** is now enforced at both installer and runtime bootstrap. Run `node --version` to check. If mismatched, use `nvm install 22` and ensure your shell PATH points to it before starting the gateway.
@@ -634,6 +666,8 @@ openclaw config validate --json     # machine-readable validation output (v2026.
 > - **ACP dispatch** — now enabled by default. To disable: `openclaw config set acp.dispatch.enabled false`.
 > - **Plugin SDK** — `api.registerHttpHandler(...)` removed. Custom plugins must use `api.registerHttpRoute({ path, auth, match, handler })`.
 > - **Zalo Personal plugin** — no longer depends on external `zca`-compatible CLI binaries. Run `openclaw channels login --channel zalouser` after upgrade to refresh sessions.
+
+> **Breaking change (v2026.3.7):** `gateway.auth.mode` is now **required** when both `gateway.auth.token` and `gateway.auth.password` are configured (including SecretRefs). You must explicitly set `gateway.auth.mode` to `token` or `password` before upgrading. Without it, the gateway will refuse to start.
 
 > **`openclaw onboard --reset` scope change (v2026.2.26):** Default reset scope is now `config+creds+sessions`. Workspace deletion (bootstrap files, skills, memory) now requires `--reset-scope full`. Do NOT run `openclaw onboard --reset` without specifying `--reset-scope` explicitly — the default no longer wipes the workspace.
 
@@ -675,6 +709,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.gateway.plis
 
 **Before/After Updates:**
 - After update: `openclaw doctor --fix` (handles config migrations automatically)
+- Pre-startup: `openclaw config validate --json` (v2026.3.2+) — catches invalid keys before gateway restart
 - v2026.2.23 breaking change: `allowPrivateNetwork` → `dangerouslyAllowPrivateNetwork` — auto-fixed by doctor
 - Manual backup only needed for major upgrades or multi-file restructuring (see Backup Strategy below)
 
@@ -693,6 +728,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.gateway.plis
 - No public port exposure — use Tailscale for remote
 - API keys not in skill files or version control
 - Audit ClawHub skills before installing
+- **ClawJacked (CVE-2026-25253):** Patched in v2026.2.26, hardened in v2026.3.2+. Malicious websites could hijack locally-running gateways via WebSocket localhost brute-force. Always update to latest; audit device pairings after upgrade.
 
 ---
 
@@ -741,6 +777,11 @@ tail -50 ~/.openclaw/logs/gateway.err.log | grep -v DEP0040   # skip Node deprec
 | `config unset` fails on auth profile keys | Edit JSON directly | Colons in keys break the config path parser. Use python3/jq. |
 | `models status --probe` mass timeouts | Test individual providers with `curl` | Probe contention — 16+ simultaneous targets saturate the event loop. Not real failures. |
 | Provider returns HTTP `529` | `openclaw logs --follow` | Previously misclassified as a hard error — now treated as `rate_limit` (v2026.3.2+), triggering model failover automatically. Common with Anthropic-compatible APIs under load. |
+| Tools invoked but nothing happens (silent failure) | `openclaw logs --follow` | **Model-specific bug (Issue #40069, v2026.3.7).** Confirmed with `kimi-coding/k2p5`. Switch to a different model (Claude, GPT, etc.) — the issue is model-specific. Fix PR #40150 submitted. |
+| Compaction freezes session (timeout ~300s) | Check compaction model | **Issue #38233.** Override compaction model: `"compaction": { "model": "google/gemini-3-flash-preview", "thinking": "off" }`. Tune: `maxHistoryShare: 0.6`, `reserveTokensFloor: 40000`, `maxAttempts: 3`. |
+| Fallback doesn't escalate during provider outage | `openclaw logs --follow` | **Issue #32533.** During outages, OpenClaw retried alternate auth profiles of the same provider instead of escalating to fallback providers. Fix PRs #32593, #32669, #32883. |
+| Control UI loses auth on page navigation | Check device identity | **Issue #39611 (v2026.3.7).** WebSocket disconnects with "device identity required" on navigation. Token persistence broken during page changes. Avoid multi-page Control UI workflows until patched. |
+| Config file wiped on gateway restart | Back up config first | **Issue #40410 (v2026.3.7).** Back up `openclaw.json` before gateway restarts as a precaution. |
 
 ### 10a. Remote Ollama on macOS (Known Bug Workaround)
 

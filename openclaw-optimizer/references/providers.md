@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — Provider Reference
-# Aligned with OpenClaw v2026.2.26 | Source: docs.openclaw.ai/providers
+# Aligned with OpenClaw v2026.3.7 | Source: docs.openclaw.ai/providers
 
 ---
 
@@ -8,9 +8,10 @@
 | Provider | Slug | Auth Env Var | Model Format | Notes |
 |---|---|---|---|---|
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` | `anthropic/claude-opus-4-6` | Prompt caching; prefer direct for Opus/Sonnet |
-| OpenAI | `openai` | `OPENAI_API_KEY` | `openai/gpt-5.1-codex` | — |
+| OpenAI | `openai` | `OPENAI_API_KEY` | `openai/gpt-5.4` | Default `gpt` alias updated v2026.3.7 |
 | OpenAI Codex (OAuth) | `openai-codex` | Device flow | `openai-codex/gpt-5.3-codex` | ChatGPT subscription |
 | Google Gemini | `google` | `GEMINI_API_KEY` | `google/gemini-3-pro-preview` | 1M context Flash variant |
+| Google Gemini 3.1 Flash-Lite | `google` | `GEMINI_API_KEY` | `google/gemini-3.1-flash-lite-preview` | New in v2026.3.7; ultra-cheap |
 | Google Vertex AI | `google-vertex` | gcloud ADC | — | `gcloud auth application-default login` |
 | Mistral | `mistral` | `MISTRAL_API_KEY` | `mistral/mistral-large-latest` | Also: audio via `voxtral-mini-latest` |
 | Groq | `groq` | `GROQ_API_KEY` | `groq/<model-id>` | Run `openclaw models list` after auth |
@@ -24,8 +25,9 @@
 | Moonshot (Kimi) | `moonshot` | `MOONSHOT_API_KEY` | `moonshot/kimi-k2.5` | 256K ctx; NOT interchangeable with kimi-coding |
 | Kimi Coding | `kimi-coding` | `KIMI_API_KEY` | `kimi-coding/k2p5` | Separate product from Moonshot |
 | Z.AI / GLM | `zai` | `ZAI_API_KEY` | `zai/glm-5` | `tool_stream` enabled by default |
-| MiniMax | `minimax` | `MINIMAX_API_KEY` | `minimax/MiniMax-M2.1` | Anthropic-messages API type |
-| Venice AI | `venice` | `VENICE_API_KEY` | `venice/llama-3.3-70b` | Privacy-first; 25 models; no logging |
+| MiniMax | `minimax` | `MINIMAX_API_KEY` | `minimax/MiniMax-M2.5-highspeed` | Anthropic-messages API type; `M2.5-Lightning` removed v2026.3.7 |
+| MiniMax VL-01 | `minimax-portal` | `MINIMAX_API_KEY` | `minimax-portal/MiniMax-VL-01` | Vision model; VLM endpoint routing (v2026.3.7) |
+| Venice AI | `venice` | `VENICE_API_KEY` | `venice/kimi-k2-5` | Privacy-first; 25 models; no logging; default changed v2026.3.7 |
 | Hugging Face | `huggingface` | `HF_TOKEN` | `huggingface/deepseek-ai/DeepSeek-R1` | Add `:cheapest`/`:fastest` policy suffix |
 | Synthetic | `synthetic` | `SYNTHETIC_API_KEY` | `synthetic/hf:MiniMaxAI/MiniMax-M2.1` | Zero-cost; 19 models |
 | Ollama (local) | `ollama` | `OLLAMA_API_KEY` (any) | `ollama/llama3.3` | Auto-discovered when env var set |
@@ -94,6 +96,13 @@ openclaw models list
 ```bash
 openclaw models scan
 ```
+
+**Ollama for memory embeddings (v2026.3.2+):**
+```bash
+openclaw config set memorySearch.provider ollama
+openclaw config set memorySearch.fallback ollama
+```
+Runs memory search embeddings locally — no external API calls. Honors `models.providers.ollama` settings.
 
 ---
 

@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — CLI Reference
-# Aligned with OpenClaw v2026.2.26 | Source: docs.openclaw.ai/cli
+# Aligned with OpenClaw v2026.3.7 | Source: docs.openclaw.ai/cli
 
 ---
 
@@ -24,6 +24,8 @@ openclaw configure                                  # alternative interactive co
 openclaw config get <key.path>                      # read a config value
 openclaw config set <key.path> <value>              # write (JSON5 parsed)
 openclaw config unset <key.path>                    # remove a config value
+openclaw config validate [--json]                    # validate config against schema (v2026.3.2+)
+openclaw config file [--absolute]                    # print active config file path (v2026.3.1+)
 
 # ── Models ──────────────────────────────────────────────────────────────────
 openclaw models list                                # all configured models
@@ -53,6 +55,8 @@ openclaw gateway call config.apply                  # validate + write config + 
 openclaw gateway call config.patch                  # merge partial config update
 openclaw gateway call update.run                    # execute update cycle via RPC
 openclaw gateway discover                           # discover gateways on network
+openclaw gateway run --log-level <level>             # per-run log level override (v2026.3.1+)
+openclaw gateway run --password-file <path>          # file-backed password input (v2026.3.7)
 
 # ── Cron ────────────────────────────────────────────────────────────────────
 openclaw cron list                                  # all jobs
@@ -71,6 +75,9 @@ openclaw cron runs --id <job-id> --limit 20         # view run history
 openclaw cron edit <job-id> [flags]                 # edit existing job
 openclaw cron enable/disable <job-id>               # toggle job on/off
 openclaw cron rm <job-id>                           # delete job
+openclaw cron add --light-context                    # lightweight bootstrap for cron runs (v2026.3.1+)
+openclaw cron add --exact                            # force staggerMs=0 (no jitter)
+openclaw cron add --stagger <duration>               # explicit stagger window
 
 # ── Sessions ────────────────────────────────────────────────────────────────
 openclaw sessions [--agent <id>] [--all-agents]     # list sessions
@@ -79,6 +86,7 @@ openclaw sessions cleanup --dry-run                 # preview pruning
 openclaw sessions cleanup --enforce                 # apply pruning
 openclaw sessions cleanup --all-agents              # prune all agents
 openclaw sessions restart <session-id>              # restart a stuck session
+openclaw sessions cleanup --fix-missing              # prune entries with missing transcripts (v2026.2.26+)
 
 # ── Updates ─────────────────────────────────────────────────────────────────
 openclaw update                                     # update to latest stable
@@ -113,6 +121,9 @@ openclaw status --deep                              # live channel probes
 openclaw logs --follow                              # tail gateway logs (real-time)
 openclaw logs --limit 500                           # last 500 log entries
 openclaw security audit                             # post-upgrade security check
+openclaw secrets audit                               # scan for hardcoded secrets (v2026.2.26+)
+openclaw secrets configure                           # configure external secrets (v2026.2.26+)
+openclaw secrets apply                               # apply secrets with validation (v2026.2.26+)
 
 # ── Channels ────────────────────────────────────────────────────────────────
 openclaw channels list                              # all channels
@@ -122,6 +133,11 @@ openclaw channels remove [--channel <platform>]
 openclaw channels login / logout                    # interactive auth (WhatsApp QR, etc.)
 openclaw pairing list <channel>                     # pending pairing requests
 openclaw pairing approve <channel> <CODE>           # approve a sender
+
+# ── Agents ─────────────────────────────────────────────────────────────────
+openclaw agents bindings                             # list agent route bindings (v2026.2.26+)
+openclaw agents bind                                 # bind agent to channel account (v2026.2.26+)
+openclaw agents unbind                               # unbind agent from channel account (v2026.2.26+)
 
 # ── Nodes ───────────────────────────────────────────────────────────────────
 openclaw nodes list [--connected]                   # list paired nodes
@@ -171,6 +187,13 @@ openclaw config set session.maintenance.maxDiskBytes 500mb
 openclaw config set gateway.bind loopback
 openclaw config set gateway.auth.token <your-token>
 openclaw config set memory.backend builtin
+openclaw config set agents.defaults.compaction.model google/gemini-3-flash-preview
+openclaw config set agents.defaults.compaction.recentTurnsPreserve 4
+openclaw config set agents.defaults.compaction.postCompactionSections "Session Startup,Red Lines"
+openclaw config set agents.defaults.bootstrapPromptTruncationWarning once
+openclaw config set cron.deferWhileActive.quietMs 300000
+openclaw config set agents.defaults.pdfModel anthropic/claude-sonnet-4-5
+openclaw config set gateway.auth.mode token
 ```
 
 ---
@@ -192,4 +215,20 @@ openclaw config set memory.backend builtin
 /approve <id> allow-once       approve exec request (from node tool)
 /approve <id> allow-always
 /approve <id> deny
+/session idle <duration>          manage thread inactivity auto-unfocus (v2026.3.1+)
+/session max-age <duration>       manage hard max-age for thread bindings (v2026.3.1+)
+/usage cost                       local cost summary from session logs
+/export-session [path]            export current session to HTML (/export alias)
+/steer <message>                  steer a running sub-agent immediately (/tell alias)
+/kill <subagent|*>                abort one or all running sub-agents
+```
+
+---
+
+## Environment Variables (New in v2026.3.x)
+
+```bash
+OPENCLAW_LOG_LEVEL=<level>         # override log level: silent|fatal|error|warn|info|debug|trace
+OPENCLAW_DIAGNOSTICS=<pattern>     # targeted debug logs (e.g., "telegram.*" or "*" for all)
+OPENCLAW_SHELL=<runtime>           # set across shell-like runtimes (exec, acp, tui-local)
 ```

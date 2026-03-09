@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — Agent Identity Optimizer Reference
-# Aligned with OpenClaw v2026.2.26 | Updated: 2026-02-25 | Source: docs.openclaw.ai/concepts/system-prompt, docs.openclaw.ai/reference/token-use, docs.openclaw.ai/concepts/agent-workspace
+# Aligned with OpenClaw v2026.3.7 | Updated: 2026-03-09 | Source: docs.openclaw.ai/concepts/system-prompt, docs.openclaw.ai/reference/token-use, docs.openclaw.ai/concepts/agent-workspace
 
 ---
 
@@ -81,6 +81,10 @@ OpenClaw uses three prompt modes (source: `docs.openclaw.ai/concepts/system-prom
 - **`none`**: Base identity line only.
 
 If a sub-agent needs persona context, pass it via `extraSystemPrompt` or give it a dedicated workspace.
+
+**Lightweight bootstrap mode (v2026.3.1+):** Setting `lightContext: true` for heartbeat or cron jobs skips all workspace bootstrap files entirely — only `HEARTBEAT.md` is loaded for heartbeats. This means identity audit findings about file size are less impactful for automated jobs using light context, but still critical for main interactive sessions.
+
+**Post-compaction sections (v2026.3.7):** `agents.defaults.compaction.postCompactionSections` controls which `AGENTS.md` sections are re-injected after compaction. Default headings: `Session Startup`, `Red Lines` (legacy: `Every Session`, `Safety`). Ensure critical instructions appear under these headings so they survive compaction.
 
 ---
 
