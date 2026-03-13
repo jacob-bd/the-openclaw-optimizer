@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — Provider Reference
-# Aligned with OpenClaw v2026.3.8 | Source: docs.openclaw.ai/providers
+# Aligned with OpenClaw v2026.3.11 | Source: docs.openclaw.ai/providers
 
 ---
 
@@ -23,7 +23,7 @@
 | Vercel AI Gateway | `vercel-ai-gateway` | `AI_GATEWAY_API_KEY` | `vercel-ai-gateway/anthropic/claude-opus-4.6` | Shorthand auto-expanded |
 | **Kilo Gateway** | `kilocode` | `KILOCODE_API_KEY` | `kilocode/anthropic/claude-opus-4.6` | New in v2026.2.23; single key → 9 providers |
 | Moonshot (Kimi) | `moonshot` | `MOONSHOT_API_KEY` | `moonshot/kimi-k2.5` | 256K ctx; NOT interchangeable with kimi-coding |
-| Kimi Coding | `kimi-coding` | `KIMI_API_KEY` | `kimi-coding/k2p5` | Separate product from Moonshot |
+| Kimi Coding | `kimi-coding` | `KIMI_API_KEY` | `kimi-coding/k2p5` | Separate product from Moonshot; tools in native Anthropic format (v2026.3.11+) |
 | Z.AI / GLM | `zai` | `ZAI_API_KEY` | `zai/glm-5` | `tool_stream` enabled by default |
 | MiniMax | `minimax` | `MINIMAX_API_KEY` | `minimax/MiniMax-M2.5-highspeed` | Anthropic-messages API type; `M2.5-Lightning` removed v2026.3.7 |
 | MiniMax VL-01 | `minimax-portal` | `MINIMAX_API_KEY` | `minimax-portal/MiniMax-VL-01` | Vision model; VLM endpoint routing (v2026.3.7) |
@@ -36,8 +36,11 @@
 | BytePlus | `byteplus` | `BYTEPLUS_API_KEY` | `byteplus/<model-id>` | No dedicated doc page |
 | Qianfan (Baidu) | `qianfan` | `bce-v3/ALTAK-...` | `qianfan/<model-id>` | China market |
 | OpenCode Zen | `opencode` | `OPENCODE_API_KEY` | `opencode/claude-opus-4-6` | Beta; uses Kilo infra |
+| OpenCode Go | `opencode-go` | `OPENCODE_API_KEY` | `opencode-go/claude-opus-4-6` | New in v2026.3.11; shares key with Zen |
 | GitHub Copilot | `github-copilot` | `COPILOT_GITHUB_TOKEN` | `github-copilot/gpt-4o` | ChatGPT subscription via device flow |
 | Cerebras | `cerebras` | `CEREBRAS_API_KEY` | `cerebras/zai-glm-4.7` | — |
+
+OpenCode Go and OpenCode Zen share a single OpenCode setup and API key.
 
 ---
 
@@ -100,10 +103,16 @@ export OLLAMA_API_KEY="ollama-local"   # triggers auto-discovery
 openclaw models list
 ```
 
+**First-class Ollama onboarding (v2026.3.11+):**
+```bash
+openclaw onboard    # now includes curated Ollama setup: Local or Cloud+Local, browser sign-in, curated model suggestions
+```
+
 **OpenRouter free-model scan:**
 ```bash
 openclaw models scan
 ```
+OpenRouter periodically adds temporary free stealth models (e.g., Hunter Alpha, Healer Alpha). Use `openclaw models scan` to discover them.
 
 **Ollama for memory embeddings (v2026.3.2+):**
 ```bash
@@ -111,6 +120,13 @@ openclaw config set memorySearch.provider ollama
 openclaw config set memorySearch.fallback ollama
 ```
 Runs memory search embeddings locally — no external API calls. Honors `models.providers.ollama` settings.
+
+**Gemini embedding for memory search (v2026.3.11+):**
+```bash
+openclaw config set memorySearch.provider google
+openclaw config set memorySearch.model gemini-embedding-2-preview
+```
+Supports configurable output dimensions and automatic reindexing. Opt-in multimodal image and audio indexing available via `memorySearch.extraPaths`.
 
 ---
 
@@ -299,6 +315,8 @@ Or: attach `AmazonBedrockFullAccess`
 **Anonymized proxy (metadata-stripped, routed to real providers):** `venice/claude-opus-45`, `venice/openai-gpt-52`, `venice/gemini-3-pro-preview`, `venice/grok-code-fast-1`, `venice/kimi-k2-thinking`, and 5 more.
 
 Auth env: `VENICE_API_KEY` (format: `vapi_xxxxxxxxxxxx`)
+
+Venice `402 Insufficient USD or Diem balance` now triggers model fallback (v2026.3.11+).
 
 ---
 

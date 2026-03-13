@@ -1,7 +1,7 @@
 ---
 name: openclaw-optimizer
 slug: openclaw-optimizer
-version: 2026.3.8
+version: 2026.3.11
 description: |
   Use when: you want to optimize an OpenClaw setup (v2026.2.23+) — cost reduction, model routing,
   provider configuration, context management, cron automation, sub-agent architecture, skills,
@@ -46,7 +46,7 @@ metadata:
 
 # OpenClaw Optimizer
 
-**Aligned with: OpenClaw v2026.3.8** | Skill v1.19.0 | Updated: 2026-03-09 | CLI-first advisor
+**Aligned with: OpenClaw v2026.3.11** | Skill v1.20.0 | Updated: 2026-03-12 | CLI-first advisor
 
 Optimize and troubleshoot OpenClaw workspaces: cost-aware routing, provider configuration, context discipline, lean automation, multi-agent architectures, and error resolution.
 
@@ -173,6 +173,8 @@ Four backup layers exist — don't stack manual backups on top unnecessarily:
 | Synthetic | `synthetic` | `SYNTHETIC_API_KEY` | `synthetic/hf:MiniMaxAI/MiniMax-M2.1` |
 | Together AI | `together` | `TOGETHER_API_KEY` | `together/moonshotai/Kimi-K2.5` |
 | Cerebras | `cerebras` | `CEREBRAS_API_KEY` | `cerebras/zai-glm-4.7` |
+| OpenCode Zen | `opencode` | `OPENCODE_API_KEY` | `opencode/claude-opus-4-6` |
+| OpenCode Go | `opencode-go` | `OPENCODE_API_KEY` | `opencode-go/claude-opus-4-6` |
 | Ollama (local) | `ollama` | `OLLAMA_API_KEY` (any) | `ollama/llama3.3` |
 | vLLM (local) | `vllm` | `VLLM_API_KEY` (any) | `vllm/<model-id>` |
 
@@ -269,6 +271,15 @@ openclaw config set memorySearch.fallback ollama
 ```
 Runs memory search embeddings locally — no external API calls. Honors `models.providers.ollama` settings.
 
+**Gemini embedding for memory search (v2026.3.11+):**
+```bash
+openclaw config set memorySearch.provider google
+openclaw config set memorySearch.model gemini-embedding-2-preview
+```
+Supports configurable output dimensions and automatic reindexing. Opt-in multimodal image and audio indexing available via `memorySearch.extraPaths`.
+
+**First-class Ollama onboarding (v2026.3.11+):** `openclaw onboard` now includes a curated Ollama setup flow — Local or Cloud+Local mode, browser sign-in, and curated model suggestions. No manual configuration needed.
+
 **Custom OpenAI-compatible provider (LM Studio, LiteLLM, etc.):** See `references/providers.md`
 
 ---
@@ -301,6 +312,8 @@ Runs memory search embeddings locally — no external API calls. Honors `models.
 - Never switch models mid-conversation — destroys Anthropic prompt cache
 - Use `anthropic` direct (not through proxies) to preserve caching for Opus/Sonnet
 - Switch only at session boundaries (`/new`)
+
+**Failover improvements (v2026.3.11):** Expired auth-profile cooldown counters now reset before next backoff. Gemini `MALFORMED_RESPONSE` treated as retryable. Poe `402` and Venice `402 Insufficient balance` trigger model fallback. HTTP 499 treated as transient. Billing recovery probes run for single-provider cooldowns without a gateway restart.
 
 ### Built-in Model Aliases (v2026.3.7+)
 
@@ -387,6 +400,8 @@ Anthropic smart defaults auto-enable `cache-ttl` pruning when using API key auth
 **What burns tokens:** System prompt (5–10K tokens/call) + bootstrap files + conversation history. Bootstrap files injected on every turn (source: `docs.openclaw.ai/concepts/system-prompt`): `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` (first-run only), plus `MEMORY.md` and/or `memory.md` **when present**. Daily `memory/*.md` files are NOT auto-injected (on-demand via memory tools). Bootstrap cap: 150K chars total, 20K per file (both configurable).
 
 > **MEMORY.md warning (from docs):** *"Keep them concise — especially MEMORY.md, which can grow over time and lead to unexpectedly high context usage and more frequent compaction."* MEMORY.md is the most common source of bootstrap bloat. Unlike AGENTS.md or SOUL.md which users actively edit, MEMORY.md tends to grow unchecked as the agent appends to it.
+
+**Memory search embeddings (v2026.3.11+):** `gemini-embedding-2-preview` supports multimodal image and audio indexing for memory search. Configure via `memorySearch.provider`, `memorySearch.model`, and `memorySearch.extraPaths`.
 
 **Check context:** `/status` · `/context list` · `/context detail` · `/usage tokens` · `/usage cost`
 
@@ -567,6 +582,10 @@ Prevents cron jobs from interrupting active conversations. Only affects `session
 
 On gateway startup, missed cron jobs are staggered to prevent gateway starvation. Top-of-hour cron expressions get up to 5 minutes of deterministic stagger. Use `--exact` or `schedule.staggerMs: 0` to disable.
 
+### Cron Delivery Migration (v2026.3.11 BREAKING)
+
+Cron jobs can no longer notify via ad hoc agent sends or fallback main-session summaries. Run `openclaw doctor --fix` to migrate legacy cron storage and legacy notify/webhook delivery metadata to the new format. Jobs using `delivery.mode: "announce"` or `delivery.mode: "webhook"` are unaffected.
+
 ### Silent Patterns
 
 **`NO_REPLY`** — agent outputs this literal string when nothing to report; system suppresses delivery entirely.
@@ -700,6 +719,8 @@ Agent Client Protocol enables OpenClaw to spawn external coding harnesses (Claud
 
 In-chat: `/acp spawn` · `/acp status` · `/acp steer <message>` · `/acp close`
 
+**Resume existing ACP sessions (v2026.3.11+):** `sessions_spawn` supports `resumeSessionId` for `runtime: "acp"` to resume an existing ACPX/Codex conversation instead of starting fresh.
+
 ---
 
 ## 7. High-ROI Optimization Levers
@@ -779,6 +800,7 @@ OPENCLAW_LOG_LEVEL=<level>         # override log level: silent|fatal|error|warn
 OPENCLAW_DIAGNOSTICS=<pattern>     # targeted debug logs (e.g., "telegram.*" or "*" for all)
 OPENCLAW_SHELL=<runtime>           # set across shell-like runtimes (exec, acp, tui-local)
 OPENCLAW_THEME=light|dark          # TUI theme override (v2026.3.8+)
+OPENCLAW_CLI=1                     # auto-set in child commands; subprocesses detect OpenClaw CLI context (v2026.3.11+)
 ```
 
 **Gateway restart (macOS LaunchAgent):**
@@ -825,6 +847,8 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.gateway.plis
 - Manual backup only needed for major upgrades or multi-file restructuring (see Backup Strategy above)
 
 **v2026.3.x Breaking Changes:**
+- **Cron delivery migration (v2026.3.11):** Cron jobs can no longer notify via ad hoc agent sends or fallback main-session summaries. Run `openclaw doctor --fix` to migrate legacy cron storage and delivery metadata.
+- **WebSocket origin validation (v2026.3.11):** Browser origin validation enforced for all browser-originated connections even with proxy headers. Closes cross-site WebSocket hijacking in `trusted-proxy` mode (GHSA-5wcw-8jjv-m286).
 - **`gateway.auth.mode` required (v2026.3.7):** When both `gateway.auth.token` AND `gateway.auth.password` are configured, you must set `gateway.auth.mode` to `"token"` or `"password"`. Gateway will not start without this.
 - **`tools.profile` defaults to `"messaging"` (v2026.3.2):** New installs no longer start with coding/system tools. Existing installs are unaffected.
 - **ACP dispatch defaults to enabled (v2026.3.2):** Set `acp.dispatch.enabled: false` to disable.
@@ -847,6 +871,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.gateway.plis
 - API keys not in skill files or version control
 - Audit ClawHub skills before installing — 341+ malicious skills confirmed
 - CVE-2026-25253 (ClawJacked): WebSocket authentication bypass allowing one-click RCE. 42,000+ exposed instances. Patched in v2026.1.29+. Verify you are on v2026.2.26+ minimum.
+- GHSA-5wcw-8jjv-m286 (v2026.3.11): Cross-site WebSocket hijacking in `trusted-proxy` mode — untrusted origins could get `operator.admin` access. Browser origin validation now enforced for all browser-originated connections.
 - `openclaw security audit --deep` for live Gateway probe
 
 ---
@@ -890,7 +915,8 @@ tail -50 ~/.openclaw/logs/gateway.err.log | grep -v DEP0040   # skip Node deprec
 | Silent tool execution failure | Check model | Known bug #40069 — agent claims tool use but no calls made. Confirmed with `kimi-coding/k2p5`. Switch model. |
 | Compaction freezes session | Override compaction model | Known bug #38233 — `/compact` times out at ~300s with Codex models. Use `compaction.model: google/gemini-3-flash-preview` |
 | Ollama stuck "typing" forever | Switch to non-Ollama model | Known bug #40434 — local Ollama models stuck via Telegram |
-| Fallback doesn't escalate on outage | Test fallback chain | Known bug #32533 — retries auth profiles instead of escalating to fallback providers |
+| Fallback doesn't escalate on outage | Test fallback chain | Known bug #32533 — retries auth profiles instead of escalating to fallback providers. Fix PRs submitted. v2026.3.11 improvements: expired cooldowns reset before backoff, billing recovery probe runs for single-provider cooldowns without restart, HTTP 499 and Poe/Venice 402 now treated as transient for fallback. |
+| Cron delivery fails after upgrade to v2026.3.11 | `openclaw doctor --fix` | v2026.3.11 migration for legacy cron notify/webhook delivery metadata |
 | ALL providers timeout simultaneously | `grep "delivery-recovery" gateway.err.log` | **Not a provider issue.** Two common causes: (A) **Context bloat** — `contextTokens` unset (unlimited), payload too large for any provider to process within `timeoutSeconds`. Fix: set `contextTokens: 100000`, `timeoutSeconds: 180`, `reserveTokensFloor: 32000`. See Section 10d. (B) **Event loop overload** — stuck delivery-queue, skills-remote probes, Gemini OAuth cycling, too many concurrent sessions. Fix: clear delivery queue, set `cron.maxConcurrentRuns: 1`. See Section 10b. |
 | Delivery recovery loop ("21 entries deferred") | `ls ~/.openclaw/delivery-queue/` | Stuck entries (wrong channel, message too long) retry forever on every restart. Move to `~/.openclaw/delivery-queue/failed/` to stop the loop. |
 | Ollama "fetch failed" (instant, ~100ms) | Check gateway err log for `Failed to discover Ollama models` | **Known bug:** OpenClaw hardcodes `127.0.0.1:11434` for Ollama discovery (Issue #8663). On macOS, LaunchAgent processes are sandboxed and can't reach private LAN IPs like `192.168.x.x` (Issue #21494). Fix: reverse SSH tunnel from Ollama machine to gateway (`ssh -fN -R 127.0.0.1:11434:127.0.0.1:11434 user@gateway`), set `baseUrl` to `http://127.0.0.1:11434`, add `OLLAMA_HOST` and `OLLAMA_API_KEY` to LaunchAgent env. See Section 10a below. |

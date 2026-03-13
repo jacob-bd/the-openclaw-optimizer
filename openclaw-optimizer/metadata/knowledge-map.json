@@ -1,6 +1,6 @@
 {
-  "skill_version": "2026.3.8",
-  "last_updated": "2026-03-09",
+  "skill_version": "2026.3.11",
+  "last_updated": "2026-03-12",
   "description": "Maps each SKILL.md section to its source documentation and changelog keywords. Used by the Self-Update Protocol to identify which sections need refreshing when a new OpenClaw version is detected.",
   "sections": {
     "providers": {
@@ -33,8 +33,8 @@
         "ollama",
         "vllm"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "model_routing": {
       "title": "Model Routing Strategy",
@@ -55,8 +55,8 @@
         "params",
         "thinkingDefault"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "context": {
       "title": "Context Management",
@@ -82,8 +82,8 @@
         "contextTokens",
         "reserveTokensFloor"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "cron": {
       "title": "Cron & Automation",
@@ -111,8 +111,8 @@
         "sessionRetention",
         "maxConcurrentRuns"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "skills": {
       "title": "Skills & Plugins",
@@ -134,8 +134,8 @@
         "npm",
         "SKILL.md"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "multi_agent": {
       "title": "Multi-Agent & Sub-Agent Architecture",
@@ -157,8 +157,8 @@
         "isolation",
         "sessions_spawn"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "cli": {
       "title": "CLI Quick Reference",
@@ -181,8 +181,8 @@
         "openclaw gateway",
         "openclaw plugins"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "ops_hygiene": {
       "title": "Ops Hygiene Checklist",
@@ -199,8 +199,8 @@
         "renamed",
         "doctor --fix"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     },
     "troubleshooting": {
       "title": "Troubleshooting Reference",
@@ -254,8 +254,8 @@
         "debugging",
         "raw-stream"
       ],
-      "last_validated": "2026-03-09",
-      "last_validated_against": "2026.3.8"
+      "last_validated": "2026-03-12",
+      "last_validated_against": "2026.3.11"
     }
   }
 }

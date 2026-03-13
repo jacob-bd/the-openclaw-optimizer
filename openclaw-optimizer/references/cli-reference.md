@@ -1,5 +1,5 @@
 # OpenClaw Optimizer — CLI Reference
-# Aligned with OpenClaw v2026.3.8 | Source: docs.openclaw.ai/cli
+# Aligned with OpenClaw v2026.3.11 | Source: docs.openclaw.ai/cli
 
 ---
 
@@ -57,6 +57,7 @@ openclaw gateway call update.run                    # execute update cycle via R
 openclaw gateway discover                           # discover gateways on network
 openclaw gateway run --log-level <level>             # per-run log level override (v2026.3.1+)
 openclaw gateway run --password-file <path>          # file-backed password input (v2026.3.7)
+# v2026.3.11+: config error messages surface up to 3 validation issues (was 1)
 
 # ── Cron ────────────────────────────────────────────────────────────────────
 openclaw cron list                                  # all jobs
@@ -102,6 +103,7 @@ openclaw backup verify                                            # validate bac
 
 # ── ACP ────────────────────────────────────────────────────────────────────
 openclaw acp --provenance off|meta|meta+receipt                   # ACP provenance control (v2026.3.8+)
+# sessions_spawn supports resumeSessionId for runtime: "acp" (v2026.3.11+)
 
 # ── Skills & Plugins ────────────────────────────────────────────────────────
 openclaw skills list                                # all skills
@@ -140,6 +142,7 @@ openclaw channels remove [--channel <platform>]
 openclaw channels login / logout                    # interactive auth (WhatsApp QR, etc.)
 openclaw pairing list <channel>                     # pending pairing requests
 openclaw pairing approve <channel> <CODE>           # approve a sender
+openclaw config set channels.discord.autoArchiveDuration <duration>   # auto-archive threads: 60|1440|4320|10080 minutes (v2026.3.11+)
 
 # ── Agents ─────────────────────────────────────────────────────────────────
 openclaw agents bindings                             # list agent route bindings (v2026.2.26+)
@@ -201,6 +204,8 @@ openclaw config set agents.defaults.bootstrapPromptTruncationWarning once
 openclaw config set cron.deferWhileActive.quietMs 300000
 openclaw config set agents.defaults.pdfModel anthropic/claude-sonnet-4-5
 openclaw config set gateway.auth.mode token
+openclaw config set memorySearch.model gemini-embedding-2-preview     # Gemini embeddings for memory (v2026.3.11+)
+openclaw config set channels.discord.autoArchiveDuration 1440         # auto-archive Discord threads (v2026.3.11+)
 ```
 
 ---
@@ -239,4 +244,5 @@ OPENCLAW_LOG_LEVEL=<level>         # override log level: silent|fatal|error|warn
 OPENCLAW_DIAGNOSTICS=<pattern>     # targeted debug logs (e.g., "telegram.*" or "*" for all)
 OPENCLAW_SHELL=<runtime>           # set across shell-like runtimes (exec, acp, tui-local)
 OPENCLAW_THEME=light|dark          # TUI theme override (v2026.3.8+)
+OPENCLAW_CLI=1                    # set automatically in child commands so subprocesses detect OpenClaw CLI context (v2026.3.11+)
 ```

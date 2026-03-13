@@ -18,6 +18,11 @@ Tracks all knowledge updates made to this skill, including which sections change
 
 <!-- Future updates appended automatically by version-check.py and the Self-Update Protocol -->
 
+## 2026.3.11 — 2026-03-12
+- Updated from: v1.19.0 (aligned with OpenClaw v2026.3.8)
+- Files updated: SKILL.md, references/cli-reference.md, references/providers.md, references/troubleshooting.md, references/identity-optimizer.md, CHANGELOG.md, README.md, metadata/*
+- Key changes: WebSocket origin validation (GHSA-5wcw-8jjv-m286), cron delivery migration breaking change, OpenCode Go provider, Gemini embedding-2-preview for memory, first-class Ollama onboarding, ACP resumeSessionId, Discord autoArchiveDuration, improved failover (cooldown resets, Gemini MALFORMED_RESPONSE retryable, Poe/Venice 402 fallback, HTTP 499 transient, billing recovery probe), OPENCLAW_CLI env var, 20+ bug fixes
+
 ## 2026.3.8 — 2026-03-09
 - Updated from: v1.18.0 (aligned with OpenClaw v2026.3.7)
 - Files updated: SKILL.md, references/cli-reference.md, references/providers.md, references/troubleshooting.md, references/identity-optimizer.md, CHANGELOG.md, metadata/*

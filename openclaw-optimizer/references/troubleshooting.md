@@ -1,9 +1,9 @@
 # OpenClaw Optimizer — Troubleshooting Reference
-# Aligned with OpenClaw v2026.3.8 | Source: docs.openclaw.ai/troubleshooting + GitHub Issues
+# Aligned with OpenClaw v2026.3.11 | Source: docs.openclaw.ai/troubleshooting + GitHub Issues
 
 ## 10. Troubleshooting Reference
 
-> Source pages fetched: docs.openclaw.ai/troubleshooting, /gateway/troubleshooting, /help/troubleshooting, /automation/troubleshooting, /channels/troubleshooting, /nodes/troubleshooting, /tools/browser-linux-troubleshooting, /help/debugging, /gateway/doctor, /cli/doctor — last pulled 2026-03-09.
+> Source pages fetched: docs.openclaw.ai/troubleshooting, /gateway/troubleshooting, /help/troubleshooting, /automation/troubleshooting, /channels/troubleshooting, /nodes/troubleshooting, /tools/browser-linux-troubleshooting, /help/debugging, /gateway/doctor, /cli/doctor — last pulled 2026-03-12.
 
 ---
 
@@ -473,6 +473,10 @@ openclaw logs --follow
 
 **Important:** The old `gateway.token` config key does NOT replace `gateway.auth.token`. You must use the new key.
 
+#### v2026.3.11 Breaking Change — Cron Delivery Migration
+
+Cron jobs can no longer notify via ad hoc agent sends or fallback main-session summaries. Run `openclaw doctor --fix` to migrate legacy cron storage and legacy notify/webhook delivery metadata to the new format.
+
 #### Pairing and Device Identity State Changed
 
 ```bash
@@ -639,6 +643,7 @@ Invalid configs no longer silently fall back to permissive defaults. `loadConfig
 | Channel message dropped | `openclaw logs --follow` | Mention required or sender not paired |
 | "RPC probe: failed" | `openclaw gateway status --deep` | Auth token mismatch or port conflict |
 | Post-upgrade broken config | `openclaw doctor --fix` | Automatic config migration |
+| Cron delivery fails after upgrade | `openclaw doctor --fix` | v2026.3.11 migration for legacy cron notify/webhook metadata |
 
 ### Known Active Bugs (GitHub Issues — v2026.3.7)
 
@@ -692,9 +697,10 @@ These are confirmed open issues with workarounds. Check GitHub for fix status be
 
 **Security:**
 
-|| Issue | Symptom | Workaround |
-||---|---|---|
-|| CVE-2026-25253 — ClawJacked | Malicious websites hijack locally-running gateways via WebSocket localhost brute-force. 42,000+ instances affected. | Update to v2026.2.26+ (patched), v2026.3.2+ (hardened). Audit device pairings. |
+| Issue | Symptom | Workaround |
+|---|---|---|
+| CVE-2026-25253 — ClawJacked | Malicious websites hijack locally-running gateways via WebSocket localhost brute-force. 42,000+ instances affected. | Update to v2026.2.26+ (patched), v2026.3.2+ (hardened). Audit device pairings. |
+| GHSA-5wcw-8jjv-m286 — WebSocket origin hijack | Browser origin validation bypass in `trusted-proxy` mode allows cross-site WebSocket hijacking with `operator.admin` access | Update to v2026.3.11+. Browser origin validation now enforced for all browser-originated connections even when proxy headers are present. |
 
 **Tools (v2026.3.7):**
 
@@ -741,3 +747,29 @@ These are confirmed open issues with workarounds. Check GitHub for fix status be
 | MS Teams | Authorization hardening — `groupPolicy` allowlist enforcement |
 | Browser | SSRF protection — block private-network redirect hops in browser navigation |
 | Exec | `system.run` approval binding for `bun`/`deno` run scripts |
+
+### v2026.3.11 Fixes
+
+**Bug fixes:**
+
+| Area | Fix |
+|---|---|
+| Auth | Expired auth-profile cooldown counters reset before next backoff — prevents permanent cooldown |
+| Auth | Cooldown windows with no failure history default to `unknown` instead of `rate_limit` |
+| Models | Gemini `MALFORMED_RESPONSE` treated as retryable timeout instead of fatal |
+| Models | Poe `402 You've used up your points!` and Venice `402 Insufficient USD or Diem balance` trigger model fallback |
+| Models | HTTP 499 treated as transient for model fallback |
+| Models | Billing recovery probe for single-provider cooldowns without gateway restart |
+| Models | Stale `errorMessage` fields ignored on successful turns |
+| Models | Azure OpenAI Responses API store override includes `azure-openai` provider |
+| Models | Kimi Coding sends tools in native Anthropic format |
+| Models | Model control tokens (`<|...|>`, full-width variants) stripped from user-facing text |
+| Gateway | Up to three validation issues surfaced in config error messages (was only one) |
+| Gateway | One trusted device-token retry on shared-token mismatch |
+| Gateway | Dashboard auth tokens in session-scoped storage |
+| Sessions | Session resets clear stale runtime model, context-token, and system-prompt metadata |
+| Agents | Context pruning for image-only tool results; memory flush forwarded through `runEmbeddedPiAgent` |
+| Telegram | Final preview lifecycle, HTML chunking, and delivery fixes |
+| Discord | Reply chunking respects `maxLinesPerMessage` and `chunkMode`; `autoArchiveDuration` for threads |
+| macOS | LaunchAgent install and launchd restart fixes |
+| iOS | Immediate reconnect on foreground return |

@@ -2,6 +2,21 @@
 
 All notable changes to the OpenClaw Optimizer skill are documented here.
 
+## 1.20.0 — 2026-03-12
+
+- **Aligned with OpenClaw v2026.3.11** (covers v2026.3.9 through v2026.3.11)
+- GHSA-5wcw-8jjv-m286: WebSocket origin validation enforced for all browser-originated connections in trusted-proxy mode
+- v2026.3.11 BREAKING: Cron jobs can no longer notify via ad hoc agent sends; run `openclaw doctor --fix` to migrate
+- New providers: OpenCode Go (shares key with Zen)
+- Memory search: `gemini-embedding-2-preview` with multimodal image/audio indexing and configurable output dimensions
+- First-class Ollama onboarding via `openclaw onboard` (Local or Cloud+Local, curated model suggestions)
+- ACP `sessions_spawn` supports `resumeSessionId` for runtime `"acp"` (resume existing conversations)
+- Discord `autoArchiveDuration` for auto-created threads
+- Improved failover: expired cooldown resets, Gemini MALFORMED_RESPONSE retryable, Poe/Venice 402 triggers fallback, HTTP 499 transient, billing recovery probe for single-provider cooldowns
+- New env var: `OPENCLAW_CLI` auto-set in child commands
+- 20+ bug fixes: session reset metadata cleanup, context pruning for image-only results, Kimi Coding native Anthropic tools, Discord reply chunking, Telegram delivery fixes, macOS LaunchAgent fixes
+- Updated all 4 reference files to v2026.3.11
+
 ## 1.19.0 — 2026-03-09
 
 - **Aligned with OpenClaw v2026.3.8** (covers v2026.3.1 through v2026.3.8)

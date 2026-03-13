@@ -2,7 +2,7 @@
 
 ![OpenClaw Optimizer Banner](assets/banner.png)
 
-**Skill v1.19.0** | Aligned with OpenClaw v2026.3.8 | CLI-first advisor
+**Skill v1.20.0** | Aligned with OpenClaw v2026.3.11 | CLI-first advisor
 
 An AI skill that turns your OpenClaw setup from "it works, I think" into a tuned, cost-efficient, self-documenting system. It audits what you have, tells you exactly what to change, shows you the rollback command before you commit, and remembers everything it learns about your deployment -- permanently, across sessions, across tools.
 
@@ -34,7 +34,7 @@ Not every request needs Opus. The skill builds a 4-tier routing plan that sends 
 
 ### 40+ Model Providers, Ready to Go
 
-Anthropic, OpenAI, OpenAI Codex (subscription-based OAuth with GPT-5.4), Google Gemini, Moonshot/Kimi, Kimi Coding, KiloCode, Groq, xAI, OpenRouter, Bedrock, Together AI, Cerebras, Hugging Face, Ollama, vLLM, MiniMax, Venice, Z.AI, Synthetic, and more. Each with the exact CLI commands to authenticate, configure, and add to your fallback chain. Includes provider ban warnings for Google (AntiGravity/Gemini CLI) and Anthropic (Claude Code tokens).
+Anthropic, OpenAI, OpenAI Codex (subscription-based OAuth with GPT-5.4), Google Gemini, Google Vertex AI, Moonshot/Kimi, Kimi Coding, KiloCode, Groq, xAI, OpenRouter, Bedrock, Together AI, Cerebras, Hugging Face, Ollama, vLLM, MiniMax, Venice, Z.AI, Synthetic, OpenCode Zen, OpenCode Go, and more. Each with the exact CLI commands to authenticate, configure, and add to your fallback chain. Includes provider ban warnings for Google (AntiGravity/Gemini CLI) and Anthropic (Claude Code tokens).
 
 ### 36-Check Agent Identity Audit
 
@@ -202,7 +202,7 @@ The skill is 13 sections of operational knowledge, 4 reference files, and a self
 | 13 | Agent Identity Optimizer | 36-check audit, file role definitions, interactive walkthrough with diffs and backups |
 
 **Reference files:**
-- `references/providers.md` -- all 40+ providers, custom provider schema, failover config
+- `references/providers.md` -- all 40+ providers (including OpenCode Go), custom provider schema, failover config
 - `references/troubleshooting.md` -- full error reference, 7 failure categories, GitHub issue workarounds
 - `references/cli-reference.md` -- complete CLI command reference
 - `references/identity-optimizer.md` -- 36-check audit checklist, file roles, walkthrough workflow
